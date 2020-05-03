@@ -1,0 +1,16 @@
+{
+  "name": "task-allocation",
+  "author": "P2PModels",
+  "description": "Aragon prototype app to allocate Amara's tasks",
+  "details_url": "/meta/details.md",
+  "source_url": "https://<placeholder-repository-url>",
+  "icons": [
+    {
+      "src": "/meta/icon.svg",
+      "sizes": "56x56"
+    }
+  ],
+  "screenshots": [{ "src": "/meta/screenshot-1.png" }],
+  "start_url": "/index.html",
+  "script": "/script.js"
+}
