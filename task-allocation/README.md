@@ -1,63 +1,82 @@
-# Aragon Buidler Boilerplate
+# Task Allocation App
 
-> 🕵️ [Find more boilerplates using GitHub](https://github.com/search?q=topic:aragon-boilerplate) |
-> ✨ [Official boilerplates](https://github.com/search?q=topic:aragon-boilerplate+org:aragon)
+Task allocation aragon app. 
 
-> ▶️ To use this boilerplate, run `npx create-aragon-app <app-name>`
+## How to run Task Allocation locally
 
-Buidler + React boilerplate for Aragon applications.
+First make sure that you have node, npm, and the Aragon CLI installed and working. Instructions on how to set that up can be found [here](https://hack.aragon.org/docs/cli-intro.html). You'll also need to have [Metamask](https://metamask.io) or some kind of web wallet enabled to sign transactions in the browser.
 
-## Running your app
+Git clone this repo.
 
-To run the app in a browser with frontend and contract hot-reloading, simply run `npm start`.
-
-1. Add code quality tools, like JS and contract linting. You may also want to check existing [buidler plugins](https://buidler.dev/plugins/).
-2. Develop your [AragonApp contract](https://hack.aragon.org/docs/aragonos-building)
-3. Develop your [frontend](https://ui.aragon.org/getting-started/)
-4. [Publish](https://hack.aragon.org/docs/guides-publish)!
-
-## What's in this boilerplate?
-
-### npm Scripts
-
-- **postinstall**: Runs after installing dependencies.
-- **build-app**: Installs front end project (app/) dependencies.
-- **start** Runs your app inside a DAO.
-- **compile**: Compiles the smart contracts.
-- **test**: Runs tests for the contracts.
-- **publish:major**: Releases a major version to aragonPM.
-- **publish:minor**: Releases a minor version to aragonPM.
-- **publish:patch**: Releases a patch version to aragonPM.
-
-### Hooks
-
-These hooks are called by the Aragon Buidler plugin during the start task's lifecycle. Use them to perform custom tasks at certain entry points of the development build process, like deploying a token before a proxy is initialized, etc.
-
-Link them to the main buidler configuration file (buidler.config.js) in the `aragon.hooks` property.
-
-All hooks receive two parameters: 1) A params object that may contain other objects that pertain to the particular hook. 2) A "bre" or BuidlerRuntimeEnvironment object that contains environment objects like web3, Truffle artifacts, etc.
-
-```
-// Called before a dao is deployed.
-preDao: async ({ log }, { web3, artifacts }) => {},
-
-// Called after a dao is deployed.
-postDao: async ({ dao, _experimentalAppInstaller, log }, { web3, artifacts }) => {},
-
-// Called after the app's proxy is created, but before it's initialized.
-preInit: async ({ proxy, _experimentalAppInstaller, log  }, { web3, artifacts }) => {},
-
-// Called after the app's proxy is initialized.
-postInit: async ({ proxy, _experimentalAppInstaller, log  }, { web3, artifacts }) => {},
-
-// Called when the start task needs to know the app proxy's init parameters.
-// Must return an array with the proxy's init parameters.
-getInitParams: async ({ log }, { web3, artifacts }) => {
-  return []
-}
+```sh
+git clone https://github.com/P2PModels/task-allocation-prototype.git
 ```
 
-If you want an example of how to use these hooks, please see the [plugin's own tests for an example project](https://github.com/aragon/buidler-aragon/blob/master/test/projects/token-wrapper/scripts/hooks.js).
+Navigate into the `task-allocation` directory
+
+```sh
+cd task-allocation
+```
+
+Install npm dependencies
+
+```sh
+npm i
+```
+
+Deploy a dao with Task Allocation installed on your local environment. This will execute `aragon buidler` which will set up everything for you.
+
+```sh
+npm start
+```
+
+You will see the configuration for your local deployment in the terminal. The final terminal lines show you the url  where the aragon client is being served. It should look something like this: 
+
+```sh
+...
+frontend | Client:  http://localhost:3000/#/<DAO_ADDRESS>
+Ready for changes
+```
+
+Copy paste the link in your browser and you're all set !.
+
+## Permissions
+
+The following table contains all the permissions available for this app: 
+
+| Permissions      | Description          |
+| :--------------- | :------------------- |
+| ASSIGN_TASK_ROLE | Assign an Amara task |
+
+## How to deploy Task Allocation to an existing organization 
+
+Task Allocation has been published to APM on rinkeby at `task-allocation.open.aragonpm.eth`
+
+To deploy to an organization you can use the [Aragon CLI](https://hack.aragon.org/docs/cli-intro.html).
+
+```sh
+aragon dao install <dao-address> task-allocation.open.aragonpm.eth --environment aragon:<network>
+```
+
+`network` can be `local`, `rinkeby` or `mainnet`.
+
+After the app instance is created, you will need to assign permissions to it for it appear as an app in the DAO. 
+
+To assign permissions to the new installed app we will need the app's proxy address, we can get it executing the following command: 
+
+```sh
+dao apps <dao> -all
+```
+
+You should see a list of apps, and freshly installed apps will be listed at the bottom, in the "permissionless apps" section, in the order in which they were installed.
+
+Once you have the proxy address, we can create the new permission. Try assigning `ASSIGN_TASK_ROLE` to an entity of your choice (e.g. `Voting` app)
+
+```sh
+aragon dao acl create <dao-address> <task-allocation-address> ASSIGN_TASK_ROLE <task-allocation-address> <voting> --environment aragon:<network>
+```
+
+Read more about acl commands [here](https://hack.aragon.org/docs/cli-dao-commands#dao-acl-create).
 
 ## Structure
 
@@ -66,8 +85,14 @@ This boilerplate has the following structure:
 ```md
 root
 ├── app
+├ ├── assets
+├ ├── public
 ├ ├── src
-├ └── package.json
+├  └── amara-api
+├  └── components
+├  └── lib
+├  └── screens
+├ ├── package.json
 ├── contracts
 ├ └── CounterApp.sol
 ├── test
@@ -78,10 +103,16 @@ root
 ```
 
 - **app**: Frontend folder. Completely encapsulated: has its own package.json and dependencies.
+  - **assets**: Image files.
+  - **public**: App icon, screenshots, details, etc... 
   - **src**: Source files.
+    - **amara-api**: API proxy data access files.
+    - **components**: App components files
+    - **lib**: Helper files.
+    - **screens**: App main view components.
   - [**package.json**](https://docs.npmjs.com/creating-a-package-json-file): Frontend npm configuration file.
 - **contracts**: Smart contracts folder.
-  - `CounterApp.sol`: AragonApp contract example.
+  - `TaskAllocationApp.sol`: Task Allocation app contract.
 - **test**: Tests folder.
 - [**arapp.json**](https://hack.aragon.org/docs/cli-global-confg#the-arappjson-file): Aragon configuration file. Includes Aragon-specific metadata for your app.
 - [**manifest.json**](https://hack.aragon.org/docs/cli-global-confg#the-manifestjson-file): Aragon configuration file. Includes web-specific configuration.
@@ -95,6 +126,4 @@ root
 - [**@aragon/ui**](https://github.com/aragon/aragon-ui): Aragon UI components (in React).
 - [**@aragon/buidler-aragon**](https://github.com/aragon/buidler-aragon): Aragon Buidler plugin.
 
-### Aditional Information
 
-We have an additional script `copy-artifacts`. We use this script to get the files of the pre-compiled artifacts from `@aragon/abis`. Their purpose is to use it to deploy the aragonOS framework during local development. In a similar way, they can be used during tests.
