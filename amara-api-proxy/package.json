@@ -1,0 +1,24 @@
+{
+  "name": "amara-api-proxy",
+  "version": "1.0.0",
+  "description": "Nodejs backend to test Amara API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js -p 5000"
+  },
+  "author": "Paulo",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "glob": "^7.1.6",
+    "sqlite3": "^4.1.1"
+  },
+  "devDependencies": {
+    "ngrok": "^3.2.7",
+    "nodemon": "^2.0.2"
+  }
+}
