@@ -75,6 +75,7 @@ export default {
   'es-sv': 'Spanish - El Salvador',
   'es-uy': 'Spanish - Uruguay',
   'es-ve': 'Spanish - Venezuela',
+  'es-419': 'Spanish - Latin America',
   et: 'Estonian',
   'et-ee': 'Estonian - Estonia',
   eu: 'Basque',
