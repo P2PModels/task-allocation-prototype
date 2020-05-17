@@ -6,40 +6,51 @@ import { Box, Button } from '@aragon/ui'
 import Thumbnail from './Thumbnail'
 import Details from './Details'
 
-import { USER_ID } from '../../../lib/amara-utils'
 import { ItemTypes } from '../../../lib/dnd-utils'
 
-const DraggableTaskCard = React.forwardRef(({ task, onActionClick, isAssigned }, _) => {
-  const { video } = task
-
+const DraggableTaskCard = React.forwardRef(({
+  task,
+  video,
+  onActionClick,
+  isAssigned,
+  action: { label, mode }
+}, _) => {
+  
+  let actionLabel = label
+  if (mode === 'positive') {
+    if (task.language === video.primary_audio_language_code)
+      actionLabel = 'Transcribe'
+    else
+      actionLabel = 'Translate'
+  }
   const [{ isDragging }, drag] = useDrag({
     item: { type: ItemTypes.TASK },
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
     }),
     end: (_, monitor) => {
-      monitor.didDrop() && onActionClick(USER_ID, task.id, task.language)
+      monitor.didDrop() && onActionClick(task.id, task.language)
     },
   })
 
   return (
     <div 
       ref={isAssigned ? null : drag}
-      css={`cursor: move; overflow: visible; opacity: ${isDragging ? 0.5 : 1};`}>
+      css={`cursor: pointer; overflow: visible; opacity: ${isDragging ? 0.5 : 1};`}>
       <Box
         padding={20}
       >
         <TaskMain>
           <Thumbnail video={!!video && video} targetLanguage={task.language} />
-          <Details task={task} />
+          <Details task={task} video={video} />
           {isAssigned && (
             <Button
               css={`
                 width: 100%;
                 margin-top: 15px;
               `}
-              onClick={() => onActionClick(USER_ID, task.id, task.language)}
-              label="Translate"
+              onClick={() => onActionClick(task.id, task.language)}
+              label={actionLabel}
               mode="positive"
             />
           )}
