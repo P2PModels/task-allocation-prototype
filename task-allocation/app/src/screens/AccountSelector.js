@@ -46,7 +46,8 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
       AmaraApi.users.getDemoUsers().then(
         ({ data }) => {
           setIsSyncing(false)
-          setAccounts(data)
+          if (Array.isArray(data))
+            setAccounts(data)
         },
         err => {
           setIsSyncing(false)
@@ -61,7 +62,7 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
     <div>
       <EmptyStateCard
         text={
-          isSyncing ? (
+          isSyncing && apiUrl ? (
             <div
               css={`
                 display: grid;
@@ -85,7 +86,9 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
           <span>{error ? 
             error
             : formattedAccounts.length ? 'Select a demo account' 
-            : 'There are no demo accounts available at the moment'}
+            : apiUrl ? 
+              'There are no demo accounts available at the moment'
+              : "Couldn't connect to server"}
           </span>
           )
         }
