@@ -1,6 +1,16 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useReducer } from 'react'
 import { useAragonApi } from '@aragon/api-react'
-import { Main, Header, textStyle, Button, FloatIndicator, LoadingRing, Tabs } from '@aragon/ui'
+import { 
+  Main,
+  Header,
+  textStyle,
+  Button,
+  FloatIndicator,
+  LoadingRing,
+  Tabs,
+  Modal,
+  IconError
+} from '@aragon/ui'
 import styled from 'styled-components'
 
 import Tasks from './screens/Tasks'
@@ -16,12 +26,44 @@ import { toChecksumAddress } from 'web3-utils'
 
 const tabs = [{name: 'Tasks', body: 'Tasks'}, {name:'Tasks Drag & Drop', body: 'TasksDnD'}]
 
+const TASK_LIMIT = 9
+const TASKDND_LIMIT = 3 
+
+function formatSubRequests(subRequests) {
+  return subRequests.map(subRequest => {
+    subRequest.id = subRequest.job_id
+    return subRequest
+  })
+}
+
+function formatVideos(videos) {
+  return videos.reduce((videosRegistry, currVideo) => {
+    videosRegistry.set(currVideo.id, currVideo)
+    return videosRegistry
+  }, new Map())
+}
+
+function initSubRequestsState() {
+  return {
+    isLoading: false,
+    subRequests: [],
+    videos: new Map(),
+    totalSubRequests: 0,
+    currentPage: 0,
+  }
+}
+
 function App() {
   const { api, appState, connectedAccount } = useAragonApi()
   const { amara, apiUrl, isSyncing } = appState
-  const [availableTasks, setAvailableTasks] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [subRequestsState, setSubRequestsState] = useReducer(
+    (subRequestsState, newSubRequestsState) => 
+      ({...subRequestsState, ...newSubRequestsState}),
+    initSubRequestsState()
+  )
   const [selected, setSelected] = useState(0)
+  const [opened, setOpened] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
   const amaraId = amara ? amara.id : undefined
 
   const ScreenTab = ({ screenName }) => {
@@ -29,16 +71,24 @@ function App() {
       case 'tasks':
         return (
           <Tasks
-            tasks={availableTasks}
-            isLoading={isLoading}
+            tasks={subRequestsState.subRequests}
+            videos={subRequestsState.videos}
+            totalTasks={subRequestsState.totalSubRequests}
+            currentPage={subRequestsState.currentPage}
+            tasksLimit={TASK_LIMIT} 
+            isLoading={subRequestsState.isLoading}
             userId={amara.id}
           />
         )
       case 'tasksdnd':
         return (
           <TasksDnD
-            tasks={availableTasks}
-            isLoading={isLoading}
+            tasks={subRequestsState.subRequests}
+            videos={subRequestsState.videos}
+            totalTasks={subRequestsState.totalSubRequests}
+            currentPage={subRequestsState.currentPage}
+            tasksLimit={TASKDND_LIMIT}
+            isLoading={subRequestsState.isLoading}
             userId={amara.id}
           />
         )
@@ -59,7 +109,8 @@ function App() {
       () => 
         api.emitTrigger('AccountDisconnected', {}),
       err => {
-        setAvailableTasks([])
+        setSubRequestsState(initSubRequestsState())
+        connectionErrorHandler('Error trying to disconnect account')
         console.error('Error trying to disconnect account', err)
       }
     )
@@ -72,23 +123,57 @@ function App() {
     )
   }
 
+  const close = useCallback(() => setOpened(false), [setOpened])
+
+  const connectionErrorHandler = useCallback(mes => {
+    setModalMessage(mes)
+    setOpened(true)
+  }, [setModalMessage, setOpened])
+
+  // const handleAvailableSubRequestPagination = (limit, offset) => {
+  //   const { teams } = amara
+  //   setSubRequestsState({ isLoading: true })
+  //   AmaraApi.teams.getAvailableTeamSubtitleRequests(teams[0].name , { limit, offset }).then(
+  //     ({data: { objects: subRequests }}) => {
+  //       setSubRequestsState({
+  //         isLoading: false,
+  //         subRequests: formatSubRequests(subRequests),
+  //         currentPage: Math.floor(offset / limit)
+  //       })
+  //     },
+  //     err => {
+  //       setSubRequestsState({ isLoading: false })
+  //       console.error('Error trying to get user subtitle requests', err)
+  //     }
+  //   )
+  // }
+
+  // Fetch sub requests
   useEffect(() => {
-    setAvailableTasks([])
+    setSubRequestsState(initSubRequestsState())
     if (amara && amara.id && apiUrl) {
-      const { id, teams } = amara
+      const { teams, username } = amara
       AmaraApi.setApiKeyHeader(amara.apiKey)
       AmaraApi.setBaseUrl(apiUrl)
-      setIsLoading(true)
-      AmaraApi.users.getUserAvailableTasks(id, teams).then(
-        tasks => {
-          setIsLoading(false)
-          setAvailableTasks(tasks)
-        },
-        err =>{
-          setIsLoading(false)
-          console.error('Error trying to get user available tasks', err)
-        }
-      )
+
+      async function getSubRequestsData() {
+        const t0 = performance.now()
+        setSubRequestsState({isLoading: true})
+        const { data: { objects: teamSubRequests, meta: { total_count }}} = 
+          await AmaraApi.teams.getAvailableTeamSubtitleRequests(teams[0].name, { username, limit: 100 })
+
+        const { data: { objects: teamVideos }} = await AmaraApi.videos.getAll({ team: teams[0].name })
+        const t1 = performance.now()
+        console.log(`Execution time: ${(t1- t0) / 1000}`)
+        setSubRequestsState({
+          isLoading: false,
+          subRequests: formatSubRequests(teamSubRequests),
+          totalSubRequests: total_count,
+          videos: formatVideos(teamVideos),
+        })
+      }
+
+      getSubRequestsData()
     }
   }, [amaraId, apiUrl])
 
@@ -122,19 +207,27 @@ function App() {
         </React.Fragment>
       ) : (
         <AccountSelectorLayout>
-          <AccountSelector onSelectAccount={handleSelectedAccount} />
+          <AccountSelector
+            onSelectAccount={handleSelectedAccount}
+          />
         </AccountSelectorLayout>
       )}
-      {isLoading && (
-        <FloatIndicator>
+      {subRequestsState.isLoading && (
+        <FloatIndicator shift={window.innerWidth - 224}>
           <LoadingRing />
-          Fetching available tasks
+          <span css={`margin-left: 5%;`}>Fetching tasks...</span>
         </FloatIndicator>
       )}
+      <Modal visible={opened} onClose={close}>
+        <ModalContent>
+          <CustomIconError /> {modalMessage}
+        </ModalContent>
+      </Modal>
       {connectedAccount && toChecksumAddress(connectedAccount) === toChecksumAddress(ADMIN_ADDRESS) && 
-            <AdminDashboardLayout>
-              <AdminDashboard onClickChangeBaseUrl={baseUrl => api.setApiUrl(baseUrl).toPromise()} onClickRestart={handleRestartClick} />
-            </AdminDashboardLayout>}
+        <AdminDashboardLayout>
+          <AdminDashboard onClickChangeBaseUrl={baseUrl => api.setApiUrl(baseUrl).toPromise()} onClickRestart={handleRestartClick} />
+        </AdminDashboardLayout>
+      }
     </Main>
   )
 }
@@ -162,4 +255,15 @@ const AccountSelectorLayout = styled.div`
   align-items: center;
   justify-content: center;
 `
+const ModalContent = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+const CustomIconError = styled(IconError)`
+  width: 70px;
+  height: 70px;
+  margin-right: 1.5%;
+`
+
 export default App
