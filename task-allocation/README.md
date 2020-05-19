@@ -12,15 +12,18 @@ The following table contains all the permissions available for this app:
 
 ## How to try Task Allocation immediately
 
-[Here]: https://rinkeby.aragon.org/#/amaraprototype/0x9a841bb308422e20e35d5a2fd83dd8b59751dab4/
-
+[Here](https://rinkeby.aragon.org/#/amaraprototype/0x9a841bb308422e20e35d5a2fd83dd8b59751dab4/)
  you can get access to a Task Allocation demo DAO live on Rinkeby! 
 
 Keep in mind you still need to set up the Amara api proxy server to try out the prototype. 
 
 ## How to run Task Allocation locally
 
-First make sure that you have node, npm, and the Aragon CLI installed and working. Instructions on how to set that up can be found [here](https://hack.aragon.org/docs/cli-intro.html). You'll also need to have [Metamask](https://metamask.io) or some kind of web wallet enabled to sign transactions in the browser.
+First make sure that you have node, npm, and the Aragon CLI installed and working. 
+
+Instructions on how to set that up can be found [here](https://hack.aragon.org/docs/cli-intro.html). 
+
+You'll also need to have [Metamask](https://metamask.io) or some kind of web wallet enabled to sign transactions in the browser.
 
 Git clone this repo.
 
@@ -60,7 +63,7 @@ Copy paste the link in your browser and you're all set !.
 
 ## How to deploy Task Allocation to an existing organization 
 
-Task Allocation has been published to APM on rinkeby at `task-allocation.open.aragonpm.eth`
+Task Allocation has been published to APM on rinkeby at `tasks-allocation.open.aragonpm.eth`
 
 To deploy to an organization you can use the [Aragon CLI](https://hack.aragon.org/docs/cli-intro.html).
 
