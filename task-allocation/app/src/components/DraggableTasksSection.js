@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import styled from 'styled-components'
 
 import {
@@ -14,26 +14,44 @@ import TaskCardGroup from '../components/Cards/TaskCardGroup'
 const DraggableTasksSection = ({
   barTitle,
   tasks = [],
+  videos,
   isLoading,
   noTaskMessage,
   tasksPerPage = 3,
+  currentPage = 0,
+  totalTasks = 0,
   assignTaskHandler,
+  pageSelectedHandler = () => {},
   actionTaskButton, 
   isDropArea = false,
 }) => {
   const [selectedPage, setSelectedPage] = useState(0)
-  const [selectedTasks, setSelectedTasks] = useState(tasks.slice(0, tasksPerPage))
   const anchorRef = useRef(null)
   
+  const pageTasks = useMemo(() => {
+    const init = selectedPage * tasksPerPage
+    const end = init + tasksPerPage
+    return tasks.slice(init, end)
+  }, [selectedPage, tasksPerPage, tasks])
+
+  const numberPages = totalTasks >= 0 ? Math.ceil(totalTasks / tasksPerPage) : 0
+
+  const handleSelectedPage = page => {
+    // anchorRef.current.scrollIntoView()
+    setSelectedPage(page)
+    pageSelectedHandler(tasksPerPage, tasksPerPage * page)
+  }
+
   const Tasks = () => (
     <div>
-      {tasks && tasks.length > 0 && (
+      {pageTasks && pageTasks.length > 0 && (
         <TaskCardGroup>
-          {selectedTasks.map((t, index) => (
+          {pageTasks.map((t, index) => (
             <DraggableTaskCard
               margin={index === 0}
               key={t.id}
               task={t}
+              video={videos.get(t.video)}
               onActionClick={() =>
                 assignTaskHandler(t)
               }
@@ -53,14 +71,6 @@ const DraggableTasksSection = ({
     </div>
   )
 
-  const handleSelectedPage = page => {
-    anchorRef.current.scrollIntoView()
-    const init = page * tasksPerPage
-    const end = (page + 1) * tasksPerPage
-    setSelectedTasks(tasks.slice(init, end))
-    setSelectedPage(page)
-  }
-
   return (
     <div>
       <div ref={anchorRef} />
@@ -72,11 +82,9 @@ const DraggableTasksSection = ({
             `}
           >
             {`${barTitle || 'Tasks'} `}
-            {!isLoading &&
-              tasks &&
-              tasks.length > 0 && (
-                <span>({tasks.length})</span>
-              )}
+            {totalTasks > 0 && (
+              <span>({totalTasks})</span>
+            )}
           </span>
         }
       />
@@ -87,13 +95,11 @@ const DraggableTasksSection = ({
       ) : (
         <Tasks />
       )}
-      {tasks.length > tasksPerPage && (
-        <Pagination 
-          pages={Math.ceil(tasks.length / tasksPerPage)}
-          selected={selectedPage} 
-          onChange={handleSelectedPage} 
-        />
-      )}
+      <Pagination 
+        pages={numberPages}
+        selected={selectedPage} 
+        onChange={handleSelectedPage} 
+      />
     </div>
     
   )

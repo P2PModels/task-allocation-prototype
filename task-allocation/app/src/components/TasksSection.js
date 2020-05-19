@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import styled from 'styled-components'
 
 import { Bar, Pagination, textStyle } from '@aragon/ui'
@@ -9,23 +9,31 @@ import TaskCard from './Cards/TaskCard/TaskCard'
 const TasksSection = ({
   barTitle,
   tasks = [],
+  videos,
   isLoading,
   noTaskMessage,
   tasksPerPage = 3,
+  currentPage = 0,
+  totalTasks = 0,
   assignTaskHandler,
+  pageSelectedHandler = () => {},
   actionTaskButton, 
 }) => {
   const [selectedPage, setSelectedPage] = useState(0)
-  const [selectedTasks, setSelectedTasks] = useState(tasks.slice(0, tasksPerPage))
   const anchorRef = useRef(null)
-  
+
+  const pageTasks = useMemo(() => {
+    const init = selectedPage * tasksPerPage
+    const end = init + tasksPerPage
+    return tasks.slice(init, end)
+  }, [selectedPage, tasksPerPage, tasks])
+
   const handleSelectedPage = page => {
     anchorRef.current.scrollIntoView()
-    const init = page * tasksPerPage
-    const end = (page + 1) * tasksPerPage
-    setSelectedTasks(tasks.slice(init, end))
     setSelectedPage(page)
+    pageSelectedHandler(tasksPerPage, tasksPerPage * page)
   }
+  const numberPages = totalTasks >= 0 ? Math.ceil(totalTasks / tasksPerPage) : 0
 
   return (
     <div>
@@ -38,22 +46,21 @@ const TasksSection = ({
             `}
           >
             {`${barTitle || 'Tasks'} `}
-            {!isLoading &&
-              tasks &&
-              tasks.length > 0 && (
-                <span>({tasks.length})</span>
+            {totalTasks > 0 && (
+                <span>({totalTasks})</span>
               )}
           </span>
         }
       />
       <div>
-        {tasks && tasks.length > 0 && (
+        {pageTasks && pageTasks.length > 0 && (
           <TaskCardGroup>
-            {selectedTasks.map((t, index) => (
+            {pageTasks.map((t, index) => (
               <TaskCard
                 margin={index === 0}
                 key={t.id}
                 task={t}
+                video={videos.get(t.video)}
                 onActionClick={() =>
                   assignTaskHandler(t)
                 }
@@ -70,13 +77,11 @@ const TasksSection = ({
             </NoTaskMessage>
         )}
       </div>
-      {tasks.length > tasksPerPage && (
-        <Pagination 
-          pages={Math.ceil(tasks.length / tasksPerPage)}
-          selected={selectedPage} 
-          onChange={handleSelectedPage} 
-        />
-      )}
+      <Pagination 
+        pages={numberPages}
+        selected={selectedPage} 
+        onChange={handleSelectedPage} 
+      />
     </div>
     
   )

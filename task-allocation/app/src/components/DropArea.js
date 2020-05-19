@@ -16,15 +16,17 @@ const DropArea = React.forwardRef(({ children, isEmpty }, _) => {
     }),
   })
   return (
-    <MainDropArea ref={drop} canDrop={canDrop} isEmpty={isEmpty}>
+    <WrapperDropArea ref={drop}>
+      <MainDropArea canDrop={canDrop} isEmpty={isEmpty}>
+        {isEmpty && canDrop ? null : children}
+      </MainDropArea>
       {canDrop && (
         <DropPreviewArea>
           <FloatingArrowDown size="large" color="black" />
           <span css={`font-weight: bold;`}>Drop your task here</span>
         </DropPreviewArea>
       )}
-      {isEmpty && canDrop ? null : children}
-    </MainDropArea>
+    </WrapperDropArea>
   )
 })
 
@@ -39,24 +41,29 @@ const float = keyframes`
     transform: translatey(0px);
   }
 `
-const MainDropArea = styled.div`
+
+const WrapperDropArea = styled.div`
   position: relative;
+`
+
+const MainDropArea = styled.div`
   ${({ isEmpty }) =>
     isEmpty ? `height: ${INITIAL_HEIGHT};` : `transition: opacity 0.5s;`}
 
-  ${({ canDrop }) => canDrop && `border: 2px dashed grey; opacity: 0.5;`}
+  ${({ canDrop }) => canDrop && `opacity: 0.2;`}
   margin-bottom: 1%;
 `
 
 const DropPreviewArea = styled.div`
   position: absolute;
+  top: 0;
+  border: 2px dashed grey;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
-  z-index: 999;
 `
 
 const FloatingArrowDown = styled(IconArrowDown)`

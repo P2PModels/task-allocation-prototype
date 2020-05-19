@@ -6,8 +6,14 @@ import { Box, Button } from '@aragon/ui'
 import Thumbnail from './Thumbnail'
 import Details from './Details'
 
-const TaskCard = ({ task, onActionClick, margin, action: { label, mode }}) => {
-  const { video } = task
+const TaskCard = ({ task, video, onActionClick, margin, action: { label, mode }}) => {
+  let actionLabel = label
+  if (mode === 'positive') {
+    if (task.language === video.primary_audio_language_code)
+      actionLabel = 'Transcribe'
+    else
+      actionLabel = 'Translate'
+  }
 
   return (
     <Box
@@ -18,14 +24,14 @@ const TaskCard = ({ task, onActionClick, margin, action: { label, mode }}) => {
     >
       <TaskMain>
         <Thumbnail video={!!video && video} targetLanguage={task.language} />
-        <Details task={task} />
+        <Details task={task} video={video} />
         <Button
           css={`
             width: 100%;
             margin-top: 15px;
           `}
           onClick={() => onActionClick(task.id, task.language)}
-          label={label}
+          label={actionLabel}
           mode={mode}
         />
       </TaskMain>

@@ -9,33 +9,32 @@ import {
   useTheme,
   Box,
   GU,
-  Bar,
   Modal,
   ToastHub,
   Toast,
   IconAttention,
-  Pagination,
 } from '@aragon/ui'
 
-import DraggableTasksSection from '../components/DraggableTasksSection'
-import TaskCardGroup from '../components/Cards/TaskCardGroup'
 import MetamaskLogo from '../../assets/MetamaskLogo.jpg'
-import DraggableTaskCard from '../components/Cards/TaskCard/DraggableTaskCard'
-import DropArea from '../components/DropArea'
+import DraggableTasksSection from '../components/DraggableTasksSection'
 
 import { getEditorLink } from '../lib/amara-utils'
 import { utf8ToHex } from 'web3-utils'
 
-const ITEMS_PER_PAGE = 3
-
-const TasksDnD = ({ tasks, isLoading }) => {
+const TasksDnD = ({
+  tasks,
+  videos,
+  isLoading,
+  availableSubRequestHandler = () => {},
+  tasksLimit = 6,
+  totalTasks = 0, 
+  currentPage,
+}) => {
   const theme = useTheme()
   const { api, appState } = useAragonApi()
   const { tasks: allocatedTasks, amara } = appState
   const {id: userId } = amara
   const [opened, setOpened] = useState(false)
-  const [selectedPage, setSelectedPage] = useState(0)
-  const [isDropping] = useState(false)
 
   const formattedAllocatedTasks = allocatedTasks ? Object.keys(allocatedTasks).reduce(
     (totalTasks, key) => 
@@ -57,8 +56,7 @@ const TasksDnD = ({ tasks, isLoading }) => {
         )
       : []
 
-  const description = `These task are currently available for you. Drag the tasks you want to assign
-  yourself to the drop area.`
+  const description = `These task are currently available for you. Drag the tasks you want to assign yourself to the drop area.`
   const metamaskDescription = `You have to install Metamask in order to assign yourself the task.`
   
   const handleTranslateTask = useCallback(task => {
@@ -118,126 +116,33 @@ const TasksDnD = ({ tasks, isLoading }) => {
                 </Box>
                 <MetamaskBox theme={theme} description={metamaskDescription} />
               </CustomSplit>
-              {/* <Bar
-                primary={
-                  <span
-                    css={`
-                      ${textStyle('title4')}
-                    `}
-                  >
-                    Assigned Tasks{' '}
-                    {!isLoading &&
-                      userAssignedTasks &&
-                      userAssignedTasks.length > 0 && (
-                        <span>({userAssignedTasks.length})</span>
-                      )}
-                  </span>
-                }
-              />
-              <DropArea isEmpty={userAssignedTasks.length === 0}>
-                {assignedTasksExists && (
-                  <TaskCardGroup>
-                    {userAssignedTasks.map(t => {
-                      const task = tasks.find(({ id }) => id.toString() === t)
-                      return task ? (
-                        <DraggableTaskCard
-                          key={task.id}
-                          task={task}
-                          onActionClick={() => {
-                            window.open(getEditorLink(task), '_blank')
-                          }}
-                          isAssigned
-                        />
-                      ) : null
-                    })}
-                  </TaskCardGroup>
-                )}
-                {userAssignedTasks &&
-                  userAssignedTasks.length === 0 &&
-                  !isLoading &&
-                  !isDropping && (
-                    <NoTaskMessage>
-                      You don't have any task assigned.
-                    </NoTaskMessage>
-                  )}
-              </DropArea>
-              {userAssignedTasks.length > 3 && (
-                <Pagination 
-                  pages={Math.ceil(userAssignedTasks.length / ITEMS_PER_PAGE)}
-                  selected={selectedPage} 
-                  onChange={setSelectedPage} 
-                />
-              )}
-              <br />
-              <br /> */}
               <DraggableTasksSection
                 tasks={userAssignedTasks}
+                videos={videos}
+                totalTasks={userAssignedTasks.length}
                 barTitle="Assigned Tasks"
                 isLoading={isLoading}
                 noTaskMessage="You don't have any task assigned"
-                tasksPerPage={3}
+                tasksPerPage={tasksLimit}
                 assignTaskHandler={handleTranslateTask}
                 actionTaskButton={{label: 'Translate', mode: 'positive'}}
                 isDropArea
               />
               <DraggableTasksSection
                 tasks={unassignedTasks}
+                videos={videos}
+                totalTasks={totalTasks - formattedAllocatedTasks.length}
                 barTitle="Available Tasks"
                 isLoading={isLoading}
                 noTaskMessage="There are no tasks pending for you"
-                tasksPerPage={3}
+                tasksPerPage={tasksLimit}
                 assignTaskHandler={task => handleAssignTask(task, toast)}
                 actionTaskButton={{label: 'Get Task', mode: 'strong'}}
+                pageSelectedHandler={availableSubRequestHandler}
               />
-              {/* <Bar
-                primary={
-                  <span
-                    css={`
-                      ${textStyle('title4')}
-                    `}
-                  >
-                    Available Task{' '}
-                    {!isLoading &&
-                      unassignedTasks &&
-                      unassignedTasks.length > 0 && (
-                        <span>({unassignedTasks.length})</span>
-                      )}
-                  </span>
-                }
-              />
-              <div>
-                {unassignedTasks && unassignedTasks.length > 0 && (
-                  <TaskCardGroup>
-                    {unassignedTasks.map(t => (
-                      <DraggableTaskCard
-                        key={t.id}
-                        task={t}
-                        onActionClick={(userId, idTask, language) =>
-                          assignTaskHandler(userId, idTask, language, toast)
-                        }
-                        actionLabel="Get Task"
-                      />
-                    ))}
-                  </TaskCardGroup>
-                )}
-                {unassignedTasks &&
-                  unassignedTasks.length === 0 &&
-                  !isLoading && (
-                    <NoTaskMessage>
-                      There are no tasks pending for you.
-                    </NoTaskMessage>
-                  )}
-                {unassignedTasks.length > 3 && (
-                <Pagination 
-                  pages={Math.ceil(unassignedTasks.length / ITEMS_PER_PAGE)}
-                  selected={selectedPage} 
-                  onChange={setSelectedPage} 
-                />
-              )} 
-              </div> */}
               <Modal visible={opened} onClose={close}>
                 <ModalContent>
-                  <CustomIconAttention /> You already have a translation task
+                  <CustomIconAttention /> You already have a task
                   in that language.
                 </ModalContent>
               </Modal>

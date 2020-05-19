@@ -7,7 +7,6 @@ import {
   useTheme,
   Box,
   GU,
-  Bar,
   Modal,
   ToastHub,
   Toast,
@@ -20,7 +19,15 @@ import TasksSection from '../components/TasksSection'
 import { getEditorLink } from '../lib/amara-utils'
 import { utf8ToHex } from 'web3-utils'
  
-const Tasks = ({ tasks, isLoading }) => {
+const Tasks = ({
+  tasks,
+  videos,
+  isLoading,
+  availableSubRequestHandler = () => {},
+  tasksLimit = 6,
+  totalTasks = 0, 
+  currentPage,
+}) => {
   const theme = useTheme()
   const { api, appState } = useAragonApi()
   const { tasks: allocatedTasks, amara } = appState
@@ -45,8 +52,6 @@ const Tasks = ({ tasks, isLoading }) => {
           !formattedAllocatedTasks.includes(id.toString())
         )
       : []
-
-  console.log(unassignedTasks)
   const description = `These tasks are currently available for you.`
   const metamaskDescription = `You have to install Metamask in order to assign yourself the task.`
 
@@ -67,10 +72,11 @@ const Tasks = ({ tasks, isLoading }) => {
         ? setOpened(true)
         : api.assignTask(languageCodeHex, userId, id.toString()).subscribe(
             ({ code }) => {
-              if (code !== 4001)
+              if (code !== 4001) {
                 toast(
                   `You've assigned yourself a new task. Check your dashboard!`
                 )
+              }
             },
             err => console.log(err)
           )
@@ -108,25 +114,31 @@ const Tasks = ({ tasks, isLoading }) => {
             </CustomSplit>
             <TasksSection
               tasks={userAssignedTasks}
+              videos={videos}
+              totalTasks={userAssignedTasks.length}
               barTitle="Assigned Tasks"
               isLoading={isLoading}
               noTaskMessage="You don't have any task assigned"
-              tasksPerPage={6}
+              tasksPerPage={tasksLimit}
               assignTaskHandler={handleTranslateTask}
               actionTaskButton={{label: 'Translate', mode: 'positive'}}
             />
             <TasksSection
               tasks={unassignedTasks}
+              videos={videos}
+              totalTasks={totalTasks - formattedAllocatedTasks.length}
               barTitle="Available Tasks"
               isLoading={isLoading}
               noTaskMessage="There are no tasks pending for you"
-              tasksPerPage={6}
+              tasksPerPage={tasksLimit}
+              currentPage={currentPage}
               assignTaskHandler={task => handleAssignTask(task, toast)}
               actionTaskButton={{label: 'Get Task', mode: 'strong'}}
+              pageSelectedHandler={availableSubRequestHandler}
             />
             <Modal visible={opened} onClose={close}>
                 <ModalContent>
-                  <CustomIconAttention /> You already have a translation task in
+                  <CustomIconAttention /> You already have a task in
                   that language.
                 </ModalContent>
               </Modal>

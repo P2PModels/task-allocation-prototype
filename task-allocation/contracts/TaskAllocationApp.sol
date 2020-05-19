@@ -64,7 +64,7 @@ contract TaskAllocationApp is AragonApp {
     }
 
     /**
-     * @notice Assignment of the translation task.
+     * @notice Assign a new task.
      * @param _taskId The task's id.
      * @param _languageGroup User's translation group
      * @param _userId The user's id.

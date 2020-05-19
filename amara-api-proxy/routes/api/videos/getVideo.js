@@ -3,9 +3,9 @@ const axios = require('../axios')
 
 
 module.exports = Router({ mergeParams: true })
-    .get('/videos', async (req ,res, next) => {
+    .get('/videos/:id', async (req ,res, next) => {
         try {
-            const response = await axios.get(`/videos/${req.queryParams}`)
+            const response = await axios.get(`/videos/${req.params.id}/${req.queryParams}`)
             return res.json(response.data)
         } catch(error) {
             next(error)
