@@ -1,6 +1,22 @@
 # Task Allocation App
 
-Task allocation aragon app. 
+Task allocation aragon app.
+
+## Permissions
+
+The following table contains all the permissions available for this app: 
+
+| Permissions      | Description          |
+| :--------------- | :------------------- |
+| ASSIGN_TASK_ROLE | Assign an Amara task |
+
+## How to try Task Allocation immediately
+
+[Here]: https://rinkeby.aragon.org/#/amaraprototype/0x9a841bb308422e20e35d5a2fd83dd8b59751dab4/
+
+ you can get access to a Task Allocation demo DAO live on Rinkeby! 
+
+Keep in mind you still need to set up the Amara api proxy server to try out the prototype. 
 
 ## How to run Task Allocation locally
 
@@ -24,29 +40,23 @@ Install npm dependencies
 npm i
 ```
 
-Deploy a dao with Task Allocation installed on your local environment. This will execute `aragon buidler` which will set up everything for you.
+Deploy a dao with Task Allocation installed on your local environment. This will execute the `aragon buidler` which will set up everything for you.
 
 ```sh
 npm start
 ```
 
-You will see the configuration for your local deployment in the terminal. The final terminal lines show you the url  where the aragon client is being served. It should look something like this: 
+You will see the configuration for your local deployment in the terminal. The last terminal lines show you the url  where the aragon client is being served. It should look something like this: 
 
 ```sh
 ...
-frontend | Client:  http://localhost:3000/#/<DAO_ADDRESS>
+frontend | Client:  http://localhost:3000/#/<dao-address>
 Ready for changes
 ```
 
 Copy paste the link in your browser and you're all set !.
 
-## Permissions
 
-The following table contains all the permissions available for this app: 
-
-| Permissions      | Description          |
-| :--------------- | :------------------- |
-| ASSIGN_TASK_ROLE | Assign an Amara task |
 
 ## How to deploy Task Allocation to an existing organization 
 
@@ -55,28 +65,30 @@ Task Allocation has been published to APM on rinkeby at `task-allocation.open.ar
 To deploy to an organization you can use the [Aragon CLI](https://hack.aragon.org/docs/cli-intro.html).
 
 ```sh
-aragon dao install <dao-address> task-allocation.open.aragonpm.eth --environment aragon:<network>
+aragon dao install <dao-address> tasks-allocation.open.aragonpm.eth --environment aragon:<network>
 ```
 
 `network` can be `local`, `rinkeby` or `mainnet`.
 
 After the app instance is created, you will need to assign permissions to it for it appear as an app in the DAO. 
 
-To assign permissions to the new installed app we will need the app's proxy address, we can get it executing the following command: 
+To assign permissions to the new installed app we will need the app's proxy address which we can get by executing the following command: 
 
 ```sh
-dao apps <dao> -all
+dao apps <dao-address> -all --enviroment aragon:rinkeby
 ```
 
 You should see a list of apps, and freshly installed apps will be listed at the bottom, in the "permissionless apps" section, in the order in which they were installed.
 
-Once you have the proxy address, we can create the new permission. Try assigning `ASSIGN_TASK_ROLE` to an entity of your choice (e.g. `Voting` app)
+Once you have the proxy address, we can create the new permission. We recommend assigning `ASSIGN_TASK_ROLE`  permission to `ANY_ENTITY`  which is represented by the following address: `0xffffffffffffffffffffffffffffffffffffffff`.
 
 ```sh
-aragon dao acl create <dao-address> <task-allocation-address> ASSIGN_TASK_ROLE <task-allocation-address> <voting> --environment aragon:<network>
+aragon dao acl create <dao-address> <task-allocation-address> ASSIGN_TASK_ROLE 0xffffffffffffffffffffffffffffffffffffffff <permission-manager-address> --environment aragon:<network>
 ```
 
 Read more about acl commands [here](https://hack.aragon.org/docs/cli-dao-commands#dao-acl-create).
+
+After creating the permission you should see your newly installed app on your dao! 
 
 ## Structure
 
@@ -94,7 +106,7 @@ root
 ├  └── screens
 ├ ├── package.json
 ├── contracts
-├ └── CounterApp.sol
+├ └── TaskAllocationApp.sol
 ├── test
 ├── arapp.json
 ├── manifest.json
