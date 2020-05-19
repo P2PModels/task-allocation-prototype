@@ -1,4 +1,4 @@
-# Task allocation amara proxy api
+# Amara Proxy API
 
 A Node.js server to connect to Amara API so we can avoid CORS policy.
 
