@@ -16,10 +16,8 @@ Set up the aragon app bu following the README installation instructions section 
 
 Set up the proxy api by following the README  installation instructions section contained in the `amara-api-proxy` folder 
 
-Once you have both projects running, you need to select the admin account in Metamask 
+Once you have both projects running, you need to select the [admin account](https://github.com/P2PModels/task-allocation-prototype/tree/develop/task-allocation#special-admin-account) in Metamask 
 
 A dashboard will show up at the bottom of the aragon app. 
-
-![image-20200520112557825](/home/paulo/.config/Typora/typora-user-images/image-20200520112557825.png)
 
 You need to copy and paste the ngrok api and press the button. This will prompt a transaction to metamask to store the url in the app's contract so everyone can connect to the api.
