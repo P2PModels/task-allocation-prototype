@@ -10,6 +10,23 @@ The following table contains all the permissions available for this app:
 | :--------------- | :------------------- |
 | ASSIGN_TASK_ROLE | Assign an Amara task |
 
+
+
+## Special "admin" account
+
+The prototype uses the following default testing account as some sort of admin account so you can configure the prototype and set up the url from where the proxy api  is being served so you can connect to the Amara API 
+
+Once you select the account in Metamask a special config dashboard will show up at the bottom of the app 
+
+<u>Account:</u>
+
+**private key**: `0x6b12b45143fc6c7721d0ffbb9811905e773868376501fd1f46c64bf34ae29991`
+**public key**: `0x27E9727FD9b8CdDdd0854F56712AD9DF647FaB74`
+
+You can change the default admin account by assigning a new address to the `ADMIN_ADDRESS` variable located in the `amara-utils.js` file inside the `lib` folder. 
+
+
+
 ## How to try Task Allocation immediately
 
 [Here](https://rinkeby.aragon.org/#/amaraprototype/0x9a841bb308422e20e35d5a2fd83dd8b59751dab4/)
@@ -24,12 +41,6 @@ First make sure that you have node, npm, and the Aragon CLI installed and workin
 Instructions on how to set that up can be found [here](https://hack.aragon.org/docs/cli-intro.html). 
 
 You'll also need to have [Metamask](https://metamask.io) or some kind of web wallet enabled to sign transactions in the browser.
-
-Git clone this repo.
-
-```sh
-git clone https://github.com/P2PModels/task-allocation-prototype.git
-```
 
 Navigate into the `task-allocation` directory
 
@@ -73,7 +84,7 @@ aragon dao install <dao-address> tasks-allocation.open.aragonpm.eth --environmen
 
 `network` can be `local`, `rinkeby` or `mainnet`.
 
-After the app instance is created, you will need to assign permissions to it for it appear as an app in the DAO. 
+After the app instance is created, you will need to assign permissions to it for it to appear as an app in the DAO. 
 
 To assign permissions to the new installed app we will need the app's proxy address which we can get by executing the following command: 
 
@@ -95,7 +106,7 @@ After creating the permission you should see your newly installed app on your da
 
 ## Structure
 
-This boilerplate has the following structure:
+This app has the following structure:
 
 ```md
 root
