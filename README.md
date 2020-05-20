@@ -12,9 +12,9 @@ Git clone this repo
 git clone https://github.com/P2PModels/committees.git
 ```
 
-Set up the aragon app bu following the README installation instructions section contained in the `task-allocation` folder.
+Set up the aragon app bu following the README [installation instructions](https://github.com/P2PModels/task-allocation-prototype/tree/develop/task-allocation#how-to-run-task-allocation-locally) contained in the `task-allocation` folder.
 
-Set up the proxy api by following the README  installation instructions section contained in the `amara-api-proxy` folder. 
+Set up the proxy api by following the README [installation instructions](https://github.com/P2PModels/task-allocation-prototype/tree/develop/amara-api-proxy#set-up) contained in the `amara-api-proxy` folder. 
 
 Once you have both projects running, you need to select the [admin account](https://github.com/P2PModels/task-allocation-prototype/tree/develop/task-allocation#special-admin-account) in Metamask.
 
