@@ -18,10 +18,12 @@ The prototype uses the following default testing account as some sort of admin a
 
 Once you select the account in Metamask a special config dashboard will show up at the bottom of the app 
 
-<u>Account:</u>
+<u>Account</u>
 
-**private key**: `0x6b12b45143fc6c7721d0ffbb9811905e773868376501fd1f46c64bf34ae29991`
-**public key**: `0x27E9727FD9b8CdDdd0854F56712AD9DF647FaB74`
+```
+private key: 0x6b12b45143fc6c7721d0ffbb9811905e773868376501fd1f46c64bf34ae29991
+public key: 0x27E9727FD9b8CdDdd0854F56712AD9DF647FaB74
+```
 
 You can change the default admin account by assigning a new address to the `ADMIN_ADDRESS` variable located in the `amara-utils.js` file inside the `lib` folder. 
 
