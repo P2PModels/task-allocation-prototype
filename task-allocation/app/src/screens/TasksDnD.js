@@ -29,6 +29,7 @@ const TasksDnD = ({
   tasksLimit = 6,
   totalTasks = 0, 
   currentPage,
+  onClickTranslateTask,
 }) => {
   const theme = useTheme()
   const { api, appState } = useAragonApi()
@@ -56,18 +57,19 @@ const TasksDnD = ({
         )
       : []
 
-  const description = `These task are currently available for you. Drag the tasks you want to assign yourself to the drop area.`
-  const metamaskDescription = `You have to install Metamask in order to assign yourself the task.`
+  const description = `These assignments are currently available for you. Drag the ones you want to the drop area.`
+  const metamaskDescription = `You have to install Metamask in order to get assignments.`
   
   const handleTranslateTask = useCallback(task => {
     window.open(getEditorLink(task), '_blank')
+    onClickTranslateTask()
   }, [])
 
   const handleAssignTask = useCallback(
     async ({ id, language }, toast) => {
       const languageCodeHex = utf8ToHex(language)
       console.log(
-        `Assigning task ${id} which belongs to language group ${language} to the user ${userId}`
+        `Assigning assignment ${id} which belongs to language group ${language} to the user ${userId}`
       )
       const userTaskId = await api
         .call('getUserTask', languageCodeHex, userId)
@@ -78,7 +80,7 @@ const TasksDnD = ({
             ({ code }) => {
               if (code !== 4001)
                 toast(
-                  `You've assigned yourself a new task. Check your dashboard!`
+                  `You've got a new assignment. Check your dashboard!`
                 )
             },
             err => console.log(err)
@@ -120,9 +122,9 @@ const TasksDnD = ({
                 tasks={userAssignedTasks}
                 videos={videos}
                 totalTasks={userAssignedTasks.length}
-                barTitle="Assigned Tasks"
+                barTitle="My Assignments"
                 isLoading={isLoading}
-                noTaskMessage="You don't have any task assigned"
+                noTaskMessage="You don't have any assignment yet"
                 tasksPerPage={tasksLimit}
                 assignTaskHandler={handleTranslateTask}
                 actionTaskButton={{label: 'Translate', mode: 'positive'}}
@@ -132,17 +134,17 @@ const TasksDnD = ({
                 tasks={unassignedTasks}
                 videos={videos}
                 totalTasks={totalTasks - formattedAllocatedTasks.length}
-                barTitle="Available Tasks"
+                barTitle="Available Assignments"
                 isLoading={isLoading}
-                noTaskMessage="There are no tasks pending for you"
+                noTaskMessage="There are no assignments pending for you"
                 tasksPerPage={tasksLimit}
                 assignTaskHandler={task => handleAssignTask(task, toast)}
-                actionTaskButton={{label: 'Get Task', mode: 'strong'}}
+                actionTaskButton={{label: 'Get Assignment', mode: 'strong'}}
                 pageSelectedHandler={availableSubRequestHandler}
               />
               <Modal visible={opened} onClose={close}>
                 <ModalContent>
-                  <CustomIconAttention /> You already have a task
+                  <CustomIconAttention /> You already have an assignment
                   in that language.
                 </ModalContent>
               </Modal>

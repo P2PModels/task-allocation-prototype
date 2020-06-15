@@ -15,8 +15,8 @@ import styled from 'styled-components'
 
 import Tasks from './screens/Tasks'
 import TasksDnD from './screens/TasksDnD'
-
 import AccountSelector from './screens/AccountSelector'
+import Feedback from './screens/Feedback'
 
 import AmaraApi from './amara-api/'
 import AdminDashboard from './components/AdminDashboard'
@@ -24,7 +24,7 @@ import { ADMIN_ADDRESS } from './lib/amara-utils'
 
 import { toChecksumAddress } from 'web3-utils'
 
-const tabs = [{name: 'Tasks', body: 'Tasks'}, {name:'Tasks Drag & Drop', body: 'TasksDnD'}]
+const tabs = [{name: 'Assignments', body: 'Tasks'}, {name:'Assignments Drag & Drop', body: 'TasksDnD'}]
 
 const TASK_LIMIT = 9
 const TASKDND_LIMIT = 3 
@@ -64,6 +64,8 @@ function App() {
   const [selected, setSelected] = useState(0)
   const [opened, setOpened] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
+  const [showFeedback, setShowFeedback] = useState(false)
+
   const amaraId = amara ? amara.id : undefined
 
   const ScreenTab = ({ screenName }) => {
@@ -78,6 +80,7 @@ function App() {
             tasksLimit={TASK_LIMIT} 
             isLoading={subRequestsState.isLoading}
             userId={amara.id}
+            onClickTranslateTask={handleDisconnectAccount}
           />
         )
       case 'tasksdnd':
@@ -90,9 +93,15 @@ function App() {
             tasksLimit={TASKDND_LIMIT}
             isLoading={subRequestsState.isLoading}
             userId={amara.id}
+            onClickTranslateTask={handleDisconnectAccount}
           />
         )
     }
+  }
+
+  const handleFeedbackSubmit = () => {
+    console.log('Sending feedback data to server...')
+    setShowFeedback(false)
   }
 
   const handleSelectedAccount = useCallback(amara => {
@@ -106,8 +115,10 @@ function App() {
 
   const handleDisconnectAccount = useCallback(() => {
     amara.id && AmaraApi.users.update(amara.id, { ...amara, active: 0 }).then(
-      () => 
-        api.emitTrigger('AccountDisconnected', {}),
+      () => {
+        api.emitTrigger('AccountDisconnected', {})
+        setShowFeedback(true)
+      },
       err => {
         setSubRequestsState(initSubRequestsState())
         connectionErrorHandler('Error trying to disconnect account')
@@ -178,57 +189,61 @@ function App() {
   }, [amaraId, apiUrl])
 
   return (
-    <Main>
-      {isSyncing && <Syncing />}
-      {amaraId ? (
-        <React.Fragment>
-          <div css={`margin-top: 4%;`}>
-            <Tabs
-              items={tabs.map(t => t.name)}
-              selected={selected}
-              onChange={setSelected}
-            />
-          </div>
-          <Header
-            primary={
-              <HeaderLayout>
-              <div
-                css={`
-                  ${textStyle('title2')}
-                `}
-              >
-                Task Allocation
-              </div>
-              <Button label="Disconnect" mode="negative" onClick={handleDisconnectAccount} />
-              </HeaderLayout>
-            }
-          />
-          <ScreenTab screenName={tabs[selected].body} />
-        </React.Fragment>
+    <React.Fragment>
+      {showFeedback ? (
+        <Feedback onClickSubmit={handleFeedbackSubmit} />
       ) : (
-        <AccountSelectorLayout>
-          <AccountSelector
-            onSelectAccount={handleSelectedAccount}
-          />
-        </AccountSelectorLayout>
+        <Main>
+          {amaraId ? (
+            <React.Fragment>
+              <div css={`margin-top: 4%;`}>
+                <Tabs
+                  items={tabs.map(t => t.name)}
+                  selected={selected}
+                  onChange={setSelected}
+                />
+              </div>
+              <Header
+                primary={
+                  <HeaderLayout>
+                  <div
+                    css={`
+                      ${textStyle('title2')}
+                    `}
+                  >
+                    Assignment Allocation
+                  </div>
+                  </HeaderLayout>
+                }
+              />
+              <ScreenTab screenName={tabs[selected].body} />
+            </React.Fragment>
+          ) : (
+            <AccountSelectorLayout>
+              <AccountSelector
+                onSelectAccount={handleSelectedAccount}
+              />
+            </AccountSelectorLayout>
+          )}
+          {subRequestsState.isLoading && (
+            <FloatIndicator shift={window.innerWidth - 224}>
+              <LoadingRing />
+              <span css={`margin-left: 5%;`}>Fetching assignments...</span>
+            </FloatIndicator>
+          )}
+          <Modal visible={opened} onClose={close}>
+            <ModalContent>
+              <CustomIconError /> {modalMessage}
+            </ModalContent>
+          </Modal>
+          {connectedAccount && toChecksumAddress(connectedAccount) === toChecksumAddress(ADMIN_ADDRESS) && 
+            <AdminDashboardLayout>
+              <AdminDashboard onClickChangeBaseUrl={baseUrl => api.setApiUrl(baseUrl).toPromise()} onClickRestart={handleRestartClick} />
+            </AdminDashboardLayout>
+          }
+        </Main>
       )}
-      {subRequestsState.isLoading && (
-        <FloatIndicator shift={window.innerWidth - 224}>
-          <LoadingRing />
-          <span css={`margin-left: 5%;`}>Fetching tasks...</span>
-        </FloatIndicator>
-      )}
-      <Modal visible={opened} onClose={close}>
-        <ModalContent>
-          <CustomIconError /> {modalMessage}
-        </ModalContent>
-      </Modal>
-      {connectedAccount && toChecksumAddress(connectedAccount) === toChecksumAddress(ADMIN_ADDRESS) && 
-        <AdminDashboardLayout>
-          <AdminDashboard onClickChangeBaseUrl={baseUrl => api.setApiUrl(baseUrl).toPromise()} onClickRestart={handleRestartClick} />
-        </AdminDashboardLayout>
-      }
-    </Main>
+    </React.Fragment>
   )
 }
 
@@ -236,11 +251,6 @@ const AdminDashboardLayout = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 10%;
-`
-const Syncing = styled.div.attrs({ children: 'Syncing…' })`
-  position: absolute;
-  top: 15px;
-  right: 20px;
 `
 
 const HeaderLayout = styled.div`
