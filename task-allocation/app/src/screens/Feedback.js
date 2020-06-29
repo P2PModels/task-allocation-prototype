@@ -8,6 +8,7 @@ import Emoticons from '../components/Emoticons'
 const Feedback = ({ onClickSubmit }) => {
   const [hoverRating, setHoverRating] = useState(3)
   const [selectedRating, setSelectedRating] = useState(3)
+  const [showMessage, setShowMessage] = useState(false)
   let background = "";
   switch (selectedRating) {
     case 0: 
@@ -44,20 +45,31 @@ const Feedback = ({ onClickSubmit }) => {
     setHoverRating(0)
   }, [setHoverRating])
 
+  const handleSubmit = useCallback(() => {
+    setShowMessage(true)
+    onClickSubmit(selectedRating)
+  }, [onClickSubmit, setShowMessage, selectedRating])
+
   return (
     <OuterWrapper>
       <InnerWrapper background={background}>
-        <Emoticons selectedRating={selectedRating} />
-        <Label>Rate your experience</Label>
-        <StarRating
-          starCount={5}
-          hoverRating={hoverRating}
-          selectedRating={selectedRating}
-          onClickStar={handleStarClick}
-          onHoverStar={handleStarHover}
-          onLeaveStar={handleStarLeave}
-        />
-        <CustomButton label="Submit" onClick={onClickSubmit} />
+        {!showMessage ? (
+          <div>
+            <Emoticons selectedRating={selectedRating} />
+            <Label>Rate your experience</Label>
+            <StarRating
+              starCount={5}
+              hoverRating={hoverRating}
+              selectedRating={selectedRating}
+              onClickStar={handleStarClick}
+              onHoverStar={handleStarHover}
+              onLeaveStar={handleStarLeave}
+            />
+            <CustomButton label="Submit" onClick={handleSubmit} />
+          </div>
+        ) : (
+          <Message>Thank you!</Message>
+        )}
       </InnerWrapper>
     </OuterWrapper>
   )
@@ -92,5 +104,8 @@ const Label = styled.div`
   font-weight: 700;
   margin: 1.5rem 0;
 `
-
+const Message = styled.div`
+  font-size: 2rem;
+  font-weight: 700;
+`
 export default Feedback

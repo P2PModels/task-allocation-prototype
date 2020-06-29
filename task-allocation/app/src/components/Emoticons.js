@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 const Emoticons = ({ selectedRating }) => {
   let expression
-  console.log(selectedRating)
   switch(selectedRating) {
     case 1:
       expression = <Shock />
