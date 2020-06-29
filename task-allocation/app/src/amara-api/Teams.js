@@ -9,6 +9,10 @@ const Teams = {
   getAvailableTeamSubtitleRequests: (team, queryParams) => {
     const path = `/${RESOURCE}/${team}/subtitle-requests/${flatQueryParams({...AVAILALBLE_SUBTITLE_REQUESTS_QUERY, ...queryParams})}`
     return instance.get(path)
+  },
+  updateSubtitleRequest: (team, jobId, subtitler) => {
+    const path = `/${RESOURCE}/${team}/subtitle-requests/${jobId}`
+    return instance.put(path, { subtitler })
   }
 }
 
