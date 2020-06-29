@@ -24,6 +24,9 @@ function createBasicCRUDEndpoints(name) {
   endpoints.update = (id, modifiedEntity) =>
     instance.post(`/${name}/${id}`, modifiedEntity)
 
+  endpoints.create = entity =>
+    instance.post(`/${name}`, entity)
+
   return endpoints
 }
 
