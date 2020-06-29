@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useAragonApi } from '@aragon/api-react'
 import styled from 'styled-components'
 
@@ -8,8 +8,7 @@ import {
   Box,
   GU,
   Modal,
-  ToastHub,
-  Toast,
+  FloatIndicator,
   IconAttention,
 } from '@aragon/ui'
 
@@ -18,7 +17,8 @@ import TasksSection from '../components/TasksSection'
 
 import { getEditorLink } from '../lib/amara-utils'
 import { utf8ToHex } from 'web3-utils'
- 
+import AmaraApi from '../amara-api/'
+
 const Tasks = ({
   tasks,
   videos,
@@ -31,9 +31,12 @@ const Tasks = ({
 }) => {
   const theme = useTheme()
   const { api, appState } = useAragonApi()
-  const { tasks: allocatedTasks, amara } = appState
-  const {id: userId } = amara
+  const { tasks: allocatedTasks, amara, apiUrl } = appState  
   const [opened, setOpened] = useState(false)
+
+  const userId = amara && amara.id ? amara.id : '' 
+  const username = amara && amara.username ? amara.username : ''
+
   const formattedAllocatedTasks = allocatedTasks ? Object.keys(allocatedTasks).reduce(
     (totalTasks, key) => 
       totalTasks.concat(allocatedTasks[key]), [])
@@ -62,7 +65,8 @@ const Tasks = ({
   }, [])
 
   const handleAssignTask = useCallback(
-    async ({ id, language }, toast) => {
+    async task => {
+      const { id, language, team } = task
       const languageCodeHex = utf8ToHex(language)
       console.log(
         `Assigning assignment ${id} which belongs to language group ${language} to the user ${userId}`
@@ -72,15 +76,26 @@ const Tasks = ({
         .toPromise()
       userTaskId
         ? setOpened(true)
-        : api.assignTask(languageCodeHex, userId, id.toString()).subscribe(
-            ({ code }) => {
-              if (code !== 4001) {
-                toast(
-                  `You've got a new assignment. Check your dashboard!`
-                )
+        : api.assignTask(languageCodeHex, userId, id.toString())
+          .toPromise()
+          .then(
+            res => {
+              /* We'll get the transaction receipt when the user confirms the
+              transaction and a error code otherwise. */
+              if(res && !res.code) {
+                AmaraApi.setBaseUrl(apiUrl)
+                AmaraApi.teams.updateSubtitleRequest(team, id, username).then(
+                  () => {
+                    const anchorEl = document.getElementById("anchor")
+                    const toastEl = document.getElementById("custom-toast")
+                    anchorEl.scrollIntoView({ behavior: "smooth" })
+                    toastEl.style.visibility = "visible"
+                    setTimeout(() => toastEl.style.visibility = "hidden", 9000)
+                },
+                  err => console.error(err))
               }
             },
-            err => console.log(err)
+            err => console.error(err)
           )
     },
     [userId]
@@ -89,65 +104,71 @@ const Tasks = ({
   const close = useCallback(() => setOpened(false), [setOpened])
 
   return (
-    <ToastHub position="left">
-      <Toast>
-        {toast => (
-          <React.Fragment>
-            <CustomSplit>
-              <Box
-                css={`
-                  width: 90%;
-                  margin-right: 2%;
-                `}
-                padding={3 * GU}
-                heading={
-                  <div
-                    css={`
-                      ${textStyle('body3')};
-                    `}
-                  >
-                    Description
-                  </div>
-                }
-              >
-                {description}
-              </Box>
-              <MetamaskBox theme={theme} description={metamaskDescription} />
-            </CustomSplit>
-            <TasksSection
-              tasks={userAssignedTasks}
-              videos={videos}
-              totalTasks={userAssignedTasks.length}
-              barTitle="My Assignments"
-              isLoading={isLoading}
-              noTaskMessage="You don't have any assignment yet"
-              tasksPerPage={tasksLimit}
-              assignTaskHandler={handleTranslateTask}
-              actionTaskButton={{label: 'Translate', mode: 'positive'}}
-            />
-            <TasksSection
-              tasks={unassignedTasks}
-              videos={videos}
-              totalTasks={totalTasks - formattedAllocatedTasks.length}
-              barTitle="Available Assignments"
-              isLoading={isLoading}
-              noTaskMessage="There are no assignments pending for you"
-              tasksPerPage={tasksLimit}
-              currentPage={currentPage}
-              assignTaskHandler={task => handleAssignTask(task, toast)}
-              actionTaskButton={{label: 'Get Assignment', mode: 'strong'}}
-              pageSelectedHandler={availableSubRequestHandler}
-            />
-            <Modal visible={opened} onClose={close}>
-                <ModalContent>
-                  <CustomIconAttention /> You already have an assignment in
-                  that language.
-                </ModalContent>
-              </Modal>
-          </React.Fragment>
-        )}
-      </Toast>
-    </ToastHub>
+    <React.Fragment>
+      <CustomSplit>
+        <Box
+          css={`
+            width: 90%;
+            margin-right: 2%;
+          `}
+          padding={3 * GU}
+          heading={
+            <div
+              css={`
+                ${textStyle('body3')};
+              `}
+            >
+              Description
+            </div>
+          }
+        >
+          {description}
+        </Box>
+        <MetamaskBox theme={theme} description={metamaskDescription} />
+      </CustomSplit>
+      <div id="anchor" />
+      <TasksSection
+        tasks={userAssignedTasks}
+        videos={videos}
+        totalTasks={userAssignedTasks.length}
+        barTitle="My Assignments"
+        isLoading={isLoading}
+        noTaskMessage="You don't have any assignment yet"
+        tasksPerPage={tasksLimit}
+        assignTaskHandler={handleTranslateTask}
+        actionTaskButton={{label: 'Translate', mode: 'positive'}}
+      />
+      <TasksSection
+        tasks={unassignedTasks}
+        videos={videos}
+        totalTasks={totalTasks - formattedAllocatedTasks.length}
+        barTitle="Available Assignments"
+        isLoading={isLoading}
+        noTaskMessage="There are no assignments pending for you"
+        tasksPerPage={tasksLimit}
+        currentPage={currentPage}
+        assignTaskHandler={handleAssignTask}
+        actionTaskButton={{label: 'Get Assignment', mode: 'strong'}}
+        pageSelectedHandler={availableSubRequestHandler}
+      />
+      {/* Aragon toast component can't be called after a transaction
+      is signed because the Aragon Client hides the screen component so we can't
+      change its state.
+        This is a workaround to that problem */}
+      <FloatIndicator
+        css={`visibility: hidden;`}
+        id="custom-toast"
+        shift={50}
+      >
+        You've got a new assignment. Check your dashboard!
+      </FloatIndicator>
+      <Modal visible={opened} onClose={close}>
+        <ModalContent>
+          <CustomIconAttention /> You already have an assignment in
+          that language.
+        </ModalContent>
+      </Modal>
+    </React.Fragment>
   )
 }
 

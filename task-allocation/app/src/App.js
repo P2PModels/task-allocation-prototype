@@ -1,33 +1,55 @@
-import React, { useEffect, useState, useCallback, useReducer } from 'react'
-import { useAragonApi } from '@aragon/api-react'
+import React, { useEffect, useState, useCallback, useReducer, useMemo } from 'react'
+import { useAragonApi, usePath } from '@aragon/api-react'
 import { 
   Main,
   Header,
   textStyle,
-  Button,
   FloatIndicator,
   LoadingRing,
-  Tabs,
   Modal,
   IconError
 } from '@aragon/ui'
 import styled from 'styled-components'
+import moment from 'moment'
 
 import Tasks from './screens/Tasks'
 import TasksDnD from './screens/TasksDnD'
-import AccountSelector from './screens/AccountSelector'
 import Feedback from './screens/Feedback'
 
 import AmaraApi from './amara-api/'
 import AdminDashboard from './components/AdminDashboard'
+import ErrorCard from './components/Cards/ErrorCard'
+
 import { ADMIN_ADDRESS } from './lib/amara-utils'
 
 import { toChecksumAddress } from 'web3-utils'
 
-const tabs = [{name: 'Assignments', body: 'Tasks'}, {name:'Assignments Drag & Drop', body: 'TasksDnD'}]
+const modes = [{name: 'normal', body: 'Tasks'}, {name:'drag&drop', body: 'TasksDnD'}]
 
 const TASK_LIMIT = 9
 const TASKDND_LIMIT = 3 
+
+function parsePath(path) {
+  // const mockPath = '/normal/p2pmodels.user6'
+  const parseSegments =  path.split('/').filter(value => value.length)
+  if(parseSegments.length) {
+    switch(parseSegments[0]) {
+      case 'normal':
+        parseSegments[0] = 0
+        break
+      case 'drag&drop':
+        parseSegments[0] = 1
+        break
+      default:
+        parseSegments[0] = 0
+    }
+  }
+  else 
+    parseSegments.push(-1, '')
+
+  return parseSegments
+}
+
 
 function formatSubRequests(subRequests) {
   return subRequests.map(subRequest => {
@@ -55,18 +77,22 @@ function initSubRequestsState() {
 
 function App() {
   const { api, appState, connectedAccount } = useAragonApi()
-  const { amara, apiUrl, isSyncing } = appState
+  const [path] = usePath()
+  const { amara, apiUrl } = appState
   const [subRequestsState, setSubRequestsState] = useReducer(
     (subRequestsState, newSubRequestsState) => 
       ({...subRequestsState, ...newSubRequestsState}),
     initSubRequestsState()
   )
-  const [selected, setSelected] = useState(0)
   const [opened, setOpened] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
-
+  const [requestError, setRequestError] = useState('')
+  const [userIsLoading, setUserIsLoading] = useState(false)
+  const [userFound, setUserFound] = useState(false)
   const amaraId = amara ? amara.id : undefined
+
+  const [mode, pathUsername] = useMemo(() => parsePath(path), [path])
 
   const ScreenTab = ({ screenName }) => {
     switch(screenName.toLowerCase()) {
@@ -79,7 +105,6 @@ function App() {
             currentPage={subRequestsState.currentPage}
             tasksLimit={TASK_LIMIT} 
             isLoading={subRequestsState.isLoading}
-            userId={amara.id}
             onClickTranslateTask={handleDisconnectAccount}
           />
         )
@@ -92,31 +117,35 @@ function App() {
             currentPage={subRequestsState.currentPage}
             tasksLimit={TASKDND_LIMIT}
             isLoading={subRequestsState.isLoading}
-            userId={amara.id}
             onClickTranslateTask={handleDisconnectAccount}
           />
         )
     }
   }
 
-  const handleFeedbackSubmit = () => {
-    console.log('Sending feedback data to server...')
-    setShowFeedback(false)
-  }
 
-  const handleSelectedAccount = useCallback(amara => {
-    try {
-      AmaraApi.users.update(amara.id, { ...amara, active: 1 })
-      api.emitTrigger('AccountSelected', { amara })
-    } catch (err) {
-      console.error(err)
-    }
-  }, [api])
+  const handleFeedbackSubmit = selectedRating => {
+    AmaraApi.setBaseUrl(apiUrl)
+    AmaraApi.ratings.create({
+      userId: amaraId,
+      date: moment().toString(),
+      score: selectedRating
+    }).then(
+      () => {
+        console.log('feedback stored')
+        
+      },
+      err => {
+        console.error(err)
+      }
+    )
+    api.emitTrigger('AccountDisconnected', {})
+    // setShowFeedback(false)
+  }
 
   const handleDisconnectAccount = useCallback(() => {
     amara.id && AmaraApi.users.update(amara.id, { ...amara, active: 0 }).then(
       () => {
-        api.emitTrigger('AccountDisconnected', {})
         setShowFeedback(true)
       },
       err => {
@@ -159,34 +188,65 @@ function App() {
   //   )
   // }
 
+  //Fetch user account
+  useEffect(() => {
+    async function getUserAccount(username) {
+      try {
+        setUserIsLoading(true)
+        AmaraApi.setBaseUrl(apiUrl)
+        const { data: user } = await AmaraApi.users.getOne(username)
+        if(user && Object.keys(user).length === 0)
+          throw "Amara account doesn't exist"
+        api.emitTrigger('AccountSelected', { amara: user })
+        setUserIsLoading(false)
+        setUserFound(true)
+      } catch(err) {
+        setRequestError(`Couldn't get Amara account.`)
+        console.error(err)
+        setUserIsLoading(false)
+      }
+    }
+    if(pathUsername && apiUrl)
+      getUserAccount(pathUsername)
+  }, [pathUsername, apiUrl])
+
   // Fetch sub requests
   useEffect(() => {
     setSubRequestsState(initSubRequestsState())
-    if (amara && amara.id && apiUrl) {
-      const { teams, username } = amara
+    if (userFound && amara && amara.id && apiUrl) {
+      const { teams, username, languages } = amara
       AmaraApi.setApiKeyHeader(amara.apiKey)
       AmaraApi.setBaseUrl(apiUrl)
 
       async function getSubRequestsData() {
-        const t0 = performance.now()
-        setSubRequestsState({isLoading: true})
-        const { data: { objects: teamSubRequests, meta: { total_count }}} = 
-          await AmaraApi.teams.getAvailableTeamSubtitleRequests(teams[0].name, { username, limit: 100 })
-
-        const { data: { objects: teamVideos }} = await AmaraApi.videos.getAll({ team: teams[0].name })
-        const t1 = performance.now()
-        console.log(`Execution time: ${(t1- t0) / 1000}`)
-        setSubRequestsState({
-          isLoading: false,
-          subRequests: formatSubRequests(teamSubRequests),
-          totalSubRequests: total_count,
-          videos: formatVideos(teamVideos),
-        })
+        try {
+          const t0 = performance.now()
+          setSubRequestsState({isLoading: true})
+          const { data: { objects: teamSubRequests, meta: { total_count }}} = 
+            await AmaraApi.teams.getAvailableTeamSubtitleRequests(teams[0].name, { username, limit: 100 })
+          const { data: { objects: teamVideos }} = await AmaraApi.videos.getAll({ team: teams[0].name })
+          const languageFilteredSubRequests = teamSubRequests.filter(({ language }) => 
+            languages.find(({ code }) =>
+              code.toLowerCase() === language.toLowerCase()))
+          const t1 = performance.now()
+          console.log(`Execution time: ${(t1- t0) / 1000}`)
+          setSubRequestsState({
+            isLoading: false,
+            subRequests: formatSubRequests(languageFilteredSubRequests),
+            totalSubRequests: languageFilteredSubRequests.length,
+            videos: formatVideos(teamVideos),
+          })
+        } catch (err) {
+          console.error(err)
+          setSubRequestsState({
+            isLoading: false,
+          })
+        }
       }
 
       getSubRequestsData()
     }
-  }, [amaraId, apiUrl])
+  }, [userFound, apiUrl, amaraId])
 
   return (
     <React.Fragment>
@@ -194,15 +254,8 @@ function App() {
         <Feedback onClickSubmit={handleFeedbackSubmit} />
       ) : (
         <Main>
-          {amaraId ? (
+          {(!requestError && mode > -1 && userFound && amaraId) ? (
             <React.Fragment>
-              <div css={`margin-top: 4%;`}>
-                <Tabs
-                  items={tabs.map(t => t.name)}
-                  selected={selected}
-                  onChange={setSelected}
-                />
-              </div>
               <Header
                 primary={
                   <HeaderLayout>
@@ -216,17 +269,21 @@ function App() {
                   </HeaderLayout>
                 }
               />
-              <ScreenTab screenName={tabs[selected].body} />
+              <ScreenTab screenName={modes[mode].body} />
             </React.Fragment>
-          ) : (
-            <AccountSelectorLayout>
-              <AccountSelector
-                onSelectAccount={handleSelectedAccount}
-              />
-            </AccountSelectorLayout>
+          ) : (requestError || mode === -1) && (
+            <ErrorCardLayout>
+              <ErrorCard  msg={mode === -1 ? "Invalid URL" : requestError}/>
+            </ErrorCardLayout>
           )}
-          {subRequestsState.isLoading && (
-            <FloatIndicator shift={window.innerWidth - 224}>
+          {(mode > -1 && userIsLoading) && (
+            <FloatIndicator shift={50}>
+              <LoadingRing />
+              <span css={`margin-left: 5%;`}>Fetching user...</span>
+            </FloatIndicator>
+          )}
+          {(mode > -1 && subRequestsState.isLoading) && (
+            <FloatIndicator shift={50}>
               <LoadingRing />
               <span css={`margin-left: 5%;`}>Fetching assignments...</span>
             </FloatIndicator>
@@ -258,13 +315,6 @@ const HeaderLayout = styled.div`
   display: flex;
   justify-content: space-between;
 `
-const AccountSelectorLayout = styled.div`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`
 const ModalContent = styled.div`
   display: flex;
   align-items: center;
@@ -274,6 +324,14 @@ const CustomIconError = styled(IconError)`
   width: 70px;
   height: 70px;
   margin-right: 1.5%;
+`
+
+const ErrorCardLayout = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `
 
 export default App
