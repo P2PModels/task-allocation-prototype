@@ -9,7 +9,7 @@ This repo has two folders  which contain the task allocation aragon app and a pr
 Git clone this repo
 
 ```sh
-git clone https://github.com/P2PModels/committees.git
+https://github.com/P2PModels/task-allocation-prototype.git
 ```
 
 Set up the aragon app bu following the README [installation instructions](https://github.com/P2PModels/task-allocation-prototype/tree/develop/task-allocation#how-to-run-task-allocation-locally) contained in the `task-allocation` folder.
