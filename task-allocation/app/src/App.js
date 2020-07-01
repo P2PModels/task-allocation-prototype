@@ -46,7 +46,6 @@ function parsePath(path) {
   }
   else 
     parseSegments.push(-1, '')
-
   return parseSegments
 }
 
@@ -78,7 +77,7 @@ function initSubRequestsState() {
 function App() {
   const { api, appState, connectedAccount } = useAragonApi()
   const [path] = usePath()
-  const { amara, apiUrl } = appState
+  const { amara, apiUrl, isSyncing } = appState
   const [subRequestsState, setSubRequestsState] = useReducer(
     (subRequestsState, newSubRequestsState) => 
       ({...subRequestsState, ...newSubRequestsState}),
@@ -91,6 +90,7 @@ function App() {
   const [userIsLoading, setUserIsLoading] = useState(false)
   const [userFound, setUserFound] = useState(false)
   const amaraId = amara ? amara.id : undefined
+  const apiUrlNotFound = typeof(apiUrl) === 'undefined'
 
   const [mode, pathUsername] = useMemo(() => parsePath(path), [path])
 
@@ -187,13 +187,13 @@ function App() {
   //     }
   //   )
   // }
-
   //Fetch user account
   useEffect(() => {
     async function getUserAccount(username) {
       try {
         setUserIsLoading(true)
         AmaraApi.setBaseUrl(apiUrl)
+        console.log(apiUrl, username)
         const { data: user } = await AmaraApi.users.getOne(username)
         if(user && Object.keys(user).length === 0)
           throw "Amara account doesn't exist"
@@ -206,9 +206,9 @@ function App() {
         setUserIsLoading(false)
       }
     }
-    if(pathUsername && apiUrl)
+    if(!isSyncing && pathUsername && apiUrl)
       getUserAccount(pathUsername)
-  }, [pathUsername, apiUrl])
+  }, [pathUsername, apiUrl, isSyncing])
 
   // Fetch sub requests
   useEffect(() => {
@@ -271,9 +271,9 @@ function App() {
               />
               <ScreenTab screenName={modes[mode].body} />
             </React.Fragment>
-          ) : (requestError || mode === -1) && (
+          ) : (!isSyncing && (requestError || mode === -1 || apiUrlNotFound)) && (
             <ErrorCardLayout>
-              <ErrorCard  msg={mode === -1 ? "Invalid URL" : requestError}/>
+              <ErrorCard  msg={mode === -1 ? "Invalid URL" : apiUrlNotFound ? "Couldn't connect to server" : requestError}/>
             </ErrorCardLayout>
           )}
           {(mode > -1 && userIsLoading) && (
