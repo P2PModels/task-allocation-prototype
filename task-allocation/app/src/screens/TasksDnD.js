@@ -109,7 +109,8 @@ const TasksDnD = ({
 
   return (
     <DndProvider backend={Backend}>
-      <React.Fragment>
+      {/* FloatIndicator component  is over the pagination component. Need to lower it*/}
+      <div css={`margin-bottom: 50px;`}>
         <CustomSplit>
           <Box
             css={`
@@ -173,7 +174,7 @@ const TasksDnD = ({
             in that language.
           </ModalContent>
         </Modal>
-      </React.Fragment>
+      </div>
     </DndProvider>
   )
 }

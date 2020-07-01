@@ -104,7 +104,7 @@ const Tasks = ({
   const close = useCallback(() => setOpened(false), [setOpened])
 
   return (
-    <React.Fragment>
+    <div css={`margin-bottom: 50px;`}>
       <CustomSplit>
         <Box
           css={`
@@ -168,7 +168,7 @@ const Tasks = ({
           that language.
         </ModalContent>
       </Modal>
-    </React.Fragment>
+    </div>
   )
 }
 
