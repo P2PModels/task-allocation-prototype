@@ -11,7 +11,7 @@ import {
   GU,
   Modal,
   IconAttention,
-  FloatIndicator
+  FloatIndicator,
 } from '@aragon/ui'
 
 import MetamaskLogo from '../../assets/MetamaskLogo.jpg'
@@ -22,14 +22,13 @@ import { utf8ToHex } from 'web3-utils'
 
 import AmaraApi from '../amara-api/'
 
-
 const TasksDnD = ({
   tasks,
   videos,
   isLoading,
   availableSubRequestHandler = () => {},
   tasksLimit = 6,
-  totalTasks = 0, 
+  totalTasks = 0,
   currentPage,
   onClickTranslateTask,
 }) => {
@@ -38,32 +37,33 @@ const TasksDnD = ({
   const { tasks: allocatedTasks, amara, apiUrl } = appState
   const [opened, setOpened] = useState(false)
 
-  const userId = amara && amara.id ? amara.id : '' 
+  const userId = amara && amara.id ? amara.id : ''
   const username = amara && amara.username ? amara.username : ''
 
-  const formattedAllocatedTasks = allocatedTasks ? Object.keys(allocatedTasks).reduce(
-    (totalTasks, key) => 
-      totalTasks.concat(allocatedTasks[key]), [])
+  const formattedAllocatedTasks = allocatedTasks
+    ? Object.keys(allocatedTasks).reduce(
+        (totalTasks, key) => totalTasks.concat(allocatedTasks[key]),
+        []
+      )
     : []
   const userAssignedTasks =
     tasks.length && allocatedTasks && allocatedTasks[userId]
       ? allocatedTasks[userId].reduce((assignedTasks, tId) => {
-        const t = tasks.find(({ id }) => id.toString() === tId)
-        if (t)
-          assignedTasks.push(t)
-        return assignedTasks
-      }, [])
+          const t = tasks.find(({ id }) => id.toString() === tId)
+          if (t) assignedTasks.push(t)
+          return assignedTasks
+        }, [])
       : []
   const unassignedTasks =
     tasks && !!formattedAllocatedTasks
-      ? tasks.filter(({ id }) =>
-          !formattedAllocatedTasks.includes(id.toString())
+      ? tasks.filter(
+          ({ id }) => !formattedAllocatedTasks.includes(id.toString())
         )
       : []
 
   const description = `These assignments are currently available for you. Drag the ones you want to the drop area.`
   const metamaskDescription = `You have to install Metamask in order to get assignments.`
-  
+
   const handleTranslateTask = useCallback(task => {
     window.open(getEditorLink(task), '_blank')
     onClickTranslateTask()
@@ -81,26 +81,32 @@ const TasksDnD = ({
         .toPromise()
       userTaskId
         ? setOpened(true)
-        : api.assignTask(languageCodeHex, userId, id.toString()).toPromise().then(
-            res => {
-              /* We'll get the transaction receipt when the user confirms the
+        : api
+            .assignTask(languageCodeHex, userId, id.toString())
+            .toPromise()
+            .then(
+              res => {
+                /* We'll get the transaction receipt when the user confirms the
               transaction and a error code otherwise. */
-              if (res && !res.code) {
-                AmaraApi.setBaseUrl(apiUrl)
-                AmaraApi.teams.updateSubtitleRequest(team, id, username).then(
-                  () => {
-                    const anchor = document.getElementById("anchor")
-                    const toastEl = document.getElementById("custom-toast")
-                    anchor.scrollIntoView({ behavior: "smooth" })
-                    toastEl.style.visibility = "visible"
-                    setTimeout(() => toastEl.style.visibility = "hidden", 9000)
-                  },
-                  err => console.error(err)
-                )
-              }
-            },
-            err => console.log(err)
-          )
+                if (res && !res.code) {
+                  AmaraApi.setBaseUrl(apiUrl)
+                  AmaraApi.teams.updateSubtitleRequest(team, id, username).then(
+                    () => {
+                      const anchor = document.getElementById('anchor')
+                      const toastEl = document.getElementById('custom-toast')
+                      anchor.scrollIntoView({ behavior: 'smooth' })
+                      toastEl.style.visibility = 'visible'
+                      setTimeout(
+                        () => (toastEl.style.visibility = 'hidden'),
+                        9000
+                      )
+                    },
+                    err => console.error(err)
+                  )
+                }
+              },
+              err => console.log(err)
+            )
     },
     [userId]
   )
@@ -109,8 +115,12 @@ const TasksDnD = ({
 
   return (
     <DndProvider backend={Backend}>
-      {/* FloatIndicator component  is over the pagination component. Need to lower it*/}
-      <div css={`margin-bottom: 50px;`}>
+      {/* FloatIndicator component  is over the pagination component. Need to lower it */}
+      <div
+        css={`
+          margin-bottom: 50px;
+        `}
+      >
         <CustomSplit>
           <Box
             css={`
@@ -142,7 +152,7 @@ const TasksDnD = ({
           noTaskMessage="You don't have any assignment yet"
           tasksPerPage={tasksLimit}
           assignTaskHandler={handleTranslateTask}
-          actionTaskButton={{label: 'Translate', mode: 'positive'}}
+          actionTaskButton={{ label: 'Translate', mode: 'positive' }}
           isDropArea
         />
         <DraggableTasksSection
@@ -154,24 +164,20 @@ const TasksDnD = ({
           noTaskMessage="There are no assignments pending for you"
           tasksPerPage={tasksLimit}
           assignTaskHandler={handleAssignTask}
-          actionTaskButton={{label: 'Get Assignment', mode: 'strong'}}
+          actionTaskButton={{ label: 'Get Assignment', mode: 'strong' }}
           pageSelectedHandler={availableSubRequestHandler}
         />
         {/* Aragon toast component can't be called after a transaction
         is signed because the Aragon Client hides the screen component so we can't
         change its state.
           This is a workaround to that problem */}
-        <FloatIndicator
-          css={`visibility: hidden;`}
-          id="custom-toast"
-          shift={50}
-        >
+        <FloatIndicator css="visibility: hidden;" id="custom-toast" shift={50}>
           You've got a new assignment. Check your dashboard!
         </FloatIndicator>
         <Modal visible={opened} onClose={close}>
           <ModalContent>
-            <CustomIconAttention /> You already have an assignment
-            in that language.
+            <CustomIconAttention /> You already have an assignment in that
+            language.
           </ModalContent>
         </Modal>
       </div>
@@ -199,7 +205,11 @@ const MetamaskBox = ({ description }) => {
         <Links>
           <ul>
             <li>
-              <a href="https://metamask.io/" target="_blank">
+              <a
+                href="https://metamask.io/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Install Metamask
               </a>
             </li>
@@ -207,6 +217,7 @@ const MetamaskBox = ({ description }) => {
               <a
                 href="https://blog.wetrust.io/how-to-install-and-use-metamask-7210720ca047"
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 How it works?
               </a>
@@ -259,12 +270,6 @@ const Links = styled.div`
 const CustomSplit = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2%;
-`
-
-const NoTaskMessage = styled.span`
-  color: grey;
-  margin-left: 2%;
   margin-bottom: 2%;
 `
 

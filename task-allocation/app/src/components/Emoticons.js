@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 const Emoticons = ({ selectedRating }) => {
   let expression
-  switch(selectedRating) {
+  switch (selectedRating) {
     case 1:
       expression = <Shock />
       break
@@ -26,9 +26,7 @@ const Emoticons = ({ selectedRating }) => {
   return (
     <Face showFace={selectedRating > 0}>
       <Eye />
-      <Mouth>
-        {expression}
-      </Mouth>
+      <Mouth>{expression}</Mouth>
       <Eye />
     </Face>
   )
@@ -36,7 +34,7 @@ const Emoticons = ({ selectedRating }) => {
 
 const Face = styled.div`
   display: flex;
-  visibility: ${({ showFace }) => showFace ? 'visible' : 'hidden'};
+  visibility: ${({ showFace }) => (showFace ? 'visible' : 'hidden')};
   height: 5rem;
   justify-content: center;
   padding: 20vh 0 20vh 0;

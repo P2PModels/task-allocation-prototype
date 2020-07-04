@@ -17,7 +17,7 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
   const { appState } = useAragonApi()
   const { apiUrl } = appState
   const [isSyncing, setIsSyncing] = useState(true)
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
   const [accounts, setAccounts] = useState([])
   const formattedAccounts = accounts.map(({ username }) => username)
   const theme = useTheme()
@@ -40,14 +40,13 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
   )
 
   useEffect(() => {
-    if(apiUrl) {
+    if (apiUrl) {
       setError('')
       AmaraApi.setBaseUrl(apiUrl)
       AmaraApi.users.getDemoUsers().then(
         ({ data }) => {
           setIsSyncing(false)
-          if (Array.isArray(data))
-            setAccounts(data)
+          if (Array.isArray(data)) setAccounts(data)
         },
         err => {
           setIsSyncing(false)
@@ -83,17 +82,19 @@ const AccountSelector = React.memo(({ onSelectAccount }) => {
               </span>
             </div>
           ) : (
-          <span>{error ? 
-            error
-            : formattedAccounts.length ? 'Select a demo account' 
-            : apiUrl ? 
-              'There are no demo accounts available at the moment'
-              : "Couldn't connect to server"}
-          </span>
+            <span>
+              {error ||
+                (formattedAccounts.length
+                  ? 'Select a demo account'
+                  : apiUrl
+                  ? 'There are no demo accounts available at the moment'
+                  : "Couldn't connect to server")}
+            </span>
           )
         }
         action={
-          !isSyncing && !!formattedAccounts.length && (
+          !isSyncing &&
+          !!formattedAccounts.length && (
             <DropDown
               items={formattedAccounts}
               selected={-1}

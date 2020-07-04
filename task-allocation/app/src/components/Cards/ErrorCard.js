@@ -1,19 +1,11 @@
 import React from 'react'
 
-import {
-  EmptyStateCard,
-} from '@aragon/ui'
+import { EmptyStateCard } from '@aragon/ui'
 
-const ErrorCard = ({ msg }) => {  
+const ErrorCard = ({ msg }) => {
   return (
     <div>
-      <EmptyStateCard
-        text={
-          <span>
-            {msg}
-          </span>
-        }
-      />
+      <EmptyStateCard text={<span>{msg}</span>} />
     </div>
   )
 }

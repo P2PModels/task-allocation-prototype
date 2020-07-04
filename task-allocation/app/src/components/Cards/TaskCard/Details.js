@@ -9,16 +9,16 @@ const Details = ({ task, video }) => {
   const subLanguages = video.languages
     .filter(({ published }) => published)
     .map(({ name }) => name.replace(',', ' -'))
-  const formattedSubLanguages = subLanguages && subLanguages.length === 0 ?
-    `No subtitles published` :
-    subLanguages.length === 1 ? 
-      `${subLanguages[0]}` :
-      `${subLanguages
-        .slice(0, -1)
-        .join(', ')} and ${subLanguages.slice(-1)}`
-  const dueDate = moment(task.due_date).isValid() ? 
-  `${moment(task.due_date).format('YYYY-MM-DD HH:mm')} 
-    (${moment().to(task.due_date)})` : `No due date`
+  const formattedSubLanguages =
+    subLanguages && subLanguages.length === 0
+      ? `No subtitles published`
+      : subLanguages.length === 1
+      ? `${subLanguages[0]}`
+      : `${subLanguages.slice(0, -1).join(', ')} and ${subLanguages.slice(-1)}`
+  const dueDate = moment(task.due_date).isValid()
+    ? `${moment(task.due_date).format('YYYY-MM-DD HH:mm')} 
+    (${moment().to(task.due_date)})`
+    : `No due date`
 
   return (
     <DetailsMain>

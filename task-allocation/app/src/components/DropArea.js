@@ -23,7 +23,13 @@ const DropArea = React.forwardRef(({ children, isEmpty }, _) => {
       {canDrop && (
         <DropPreviewArea>
           <FloatingArrowDown size="large" color="black" />
-          <span css={`font-weight: bold;`}>Drop your task here</span>
+          <span
+            css={`
+              font-weight: bold;
+            `}
+          >
+            Drop your task here
+          </span>
         </DropPreviewArea>
       )}
     </WrapperDropArea>

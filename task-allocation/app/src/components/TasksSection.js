@@ -17,7 +17,7 @@ const TasksSection = ({
   totalTasks = 0,
   assignTaskHandler,
   pageSelectedHandler = () => {},
-  actionTaskButton, 
+  actionTaskButton,
 }) => {
   const [selectedPage, setSelectedPage] = useState(0)
   const anchorRef = useRef(null)
@@ -46,9 +46,7 @@ const TasksSection = ({
             `}
           >
             {`${barTitle || 'Tasks'} `}
-            {totalTasks > 0 && (
-                <span>({totalTasks})</span>
-              )}
+            {totalTasks > 0 && <span>({totalTasks})</span>}
           </span>
         }
       />
@@ -61,29 +59,24 @@ const TasksSection = ({
                 key={t.id}
                 task={t}
                 video={videos.get(t.video)}
-                onActionClick={() =>
-                  assignTaskHandler(t)
-                }
+                onActionClick={() => assignTaskHandler(t)}
                 action={actionTaskButton}
               />
             ))}
           </TaskCardGroup>
         )}
-        {tasks &&
-          tasks.length === 0 &&
-          !isLoading && (
-            <NoTaskMessage>
-              {noTaskMessage || 'There are no tasks.'}
-            </NoTaskMessage>
+        {tasks && tasks.length === 0 && !isLoading && (
+          <NoTaskMessage>
+            {noTaskMessage || 'There are no tasks.'}
+          </NoTaskMessage>
         )}
       </div>
-      <Pagination 
+      <Pagination
         pages={numberPages}
-        selected={selectedPage} 
-        onChange={handleSelectedPage} 
+        selected={selectedPage}
+        onChange={handleSelectedPage}
       />
     </div>
-    
   )
 }
 

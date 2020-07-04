@@ -1,7 +1,5 @@
 import { instance } from './client/index'
 import { createBasicCRUDEndpoints } from './api-helper'
-import Teams from './Teams'
-import Videos from './Videos'
 
 const RESOURCE = 'users'
 
@@ -10,8 +8,7 @@ const Users = {
 
   getDemoUsers: () => instance.get(`/${RESOURCE}/default`),
 
-  getUserTeams: username => 
-    instance.get(`/${RESOURCE}/${username}/teams`),
+  getUserTeams: username => instance.get(`/${RESOURCE}/${username}/teams`),
 }
 
 export default Users

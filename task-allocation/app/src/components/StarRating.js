@@ -20,7 +20,9 @@ const StarRating = ({
             return (
               <RatingIcon
                 key={index + 1}
-                isRotating={selectedRating >= index + 1 || hoverRating >= index + 1}
+                isRotating={
+                  selectedRating >= index + 1 || hoverRating >= index + 1
+                }
                 onClick={() => onClickStar(index + 1)}
                 onMouseOver={() => onHoverStar(index + 1)}
                 onMouseLeave={onLeaveStar}
@@ -66,6 +68,5 @@ const RatingIcon = styled.div`
   width: 3rem;
   ${({ isRotating }) => isRotating && `transform: rotate(144deg);`}}
 `
-
 
 export default StarRating

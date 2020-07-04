@@ -1,11 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react'
 import styled from 'styled-components'
 
-import {
-  textStyle,
-  Bar,
-  Pagination,
-} from '@aragon/ui'
+import { textStyle, Bar, Pagination } from '@aragon/ui'
 
 import DropArea from '../components/DropArea'
 import DraggableTaskCard from '../components/Cards/TaskCard/DraggableTaskCard'
@@ -22,12 +18,12 @@ const DraggableTasksSection = ({
   totalTasks = 0,
   assignTaskHandler,
   pageSelectedHandler = () => {},
-  actionTaskButton, 
+  actionTaskButton,
   isDropArea = false,
 }) => {
   const [selectedPage, setSelectedPage] = useState(0)
   const anchorRef = useRef(null)
-  
+
   const pageTasks = useMemo(() => {
     const init = selectedPage * tasksPerPage
     const end = init + tasksPerPage
@@ -52,21 +48,15 @@ const DraggableTasksSection = ({
               key={t.id}
               task={t}
               video={videos.get(t.video)}
-              onActionClick={() =>
-                assignTaskHandler(t)
-              }
+              onActionClick={() => assignTaskHandler(t)}
               action={actionTaskButton}
               isAssigned={isDropArea}
             />
           ))}
         </TaskCardGroup>
       )}
-      {tasks &&
-        tasks.length === 0 &&
-        !isLoading && (
-          <NoTaskMessage>
-            {noTaskMessage || 'There are no tasks.'}
-          </NoTaskMessage>
+      {tasks && tasks.length === 0 && !isLoading && (
+        <NoTaskMessage>{noTaskMessage || 'There are no tasks.'}</NoTaskMessage>
       )}
     </div>
   )
@@ -82,9 +72,7 @@ const DraggableTasksSection = ({
             `}
           >
             {`${barTitle || 'Tasks'} `}
-            {totalTasks > 0 && (
-              <span>({totalTasks})</span>
-            )}
+            {totalTasks > 0 && <span>({totalTasks})</span>}
           </span>
         }
       />
@@ -95,13 +83,12 @@ const DraggableTasksSection = ({
       ) : (
         <Tasks />
       )}
-      <Pagination 
+      <Pagination
         pages={numberPages}
-        selected={selectedPage} 
-        onChange={handleSelectedPage} 
+        selected={selectedPage}
+        onChange={handleSelectedPage}
       />
     </div>
-    
   )
 }
 

@@ -18,7 +18,7 @@ const Thumbnail = ({ video, targetLanguage, onClickHandler }) => {
       `}
       onClick={onClickHandler}
     >
-      <TagLine pos={'23px'}>
+      <TagLine pos="23px">
         {targetLanguage && (
           <VideoTag
             uppercase
@@ -51,13 +51,13 @@ const Thumbnail = ({ video, targetLanguage, onClickHandler }) => {
           `}
           src={thumbnail || NoThumbnail}
         />
-        <a href={video.all_urls[0]} target="_blank">
+        <a href={video.all_urls[0]} target="_blank" rel="noopener noreferrer">
           <PlayButtonIcon>
             <ArrowRight />
           </PlayButtonIcon>
         </a>
         {title && (
-          <TagLine paintLine pos={'-29px'}>
+          <TagLine paintLine pos="-29px">
             <VideoTag
               uppercase={false}
               size="normal"

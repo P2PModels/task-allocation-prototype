@@ -2,8 +2,10 @@ import { instance } from './client'
 
 function flatQueryParams(queryParams) {
   if (queryParams)
-    return Object.keys(queryParams).reduce((prevQueries, queryKey, index) => {    
-      return `${prevQueries}${index > 0 ? '&' : ''}${queryKey}=${queryParams[queryKey]}`
+    return Object.keys(queryParams).reduce((prevQueries, queryKey, index) => {
+      return `${prevQueries}${index > 0 ? '&' : ''}${queryKey}=${
+        queryParams[queryKey]
+      }`
     }, '?')
   return ''
 }
@@ -24,12 +26,14 @@ function createBasicCRUDEndpoints(name) {
   endpoints.update = (id, modifiedEntity) =>
     instance.post(`/${name}/${id}`, modifiedEntity)
 
-  endpoints.create = entity =>
-    instance.post(`/${name}`, entity)
+  endpoints.create = entity => instance.post(`/${name}`, entity)
 
   return endpoints
 }
 
-
-const AVAILALBLE_SUBTITLE_REQUESTS_QUERY = {'work_status': 'needs-subtitler'}
-export { createBasicCRUDEndpoints, flatQueryParams, AVAILALBLE_SUBTITLE_REQUESTS_QUERY }
+const AVAILALBLE_SUBTITLE_REQUESTS_QUERY = { work_status: 'needs-subtitler' }
+export {
+  createBasicCRUDEndpoints,
+  flatQueryParams,
+  AVAILALBLE_SUBTITLE_REQUESTS_QUERY,
+}

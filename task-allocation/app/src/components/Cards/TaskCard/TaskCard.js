@@ -6,13 +6,18 @@ import { Box, Button } from '@aragon/ui'
 import Thumbnail from './Thumbnail'
 import Details from './Details'
 
-const TaskCard = ({ task, video, onActionClick, margin, action: { label, mode }}) => {
+const TaskCard = ({
+  task,
+  video,
+  onActionClick,
+  margin,
+  action: { label, mode },
+}) => {
   let actionLabel = label
   if (mode === 'positive') {
     if (task.language === video.primary_audio_language_code)
       actionLabel = 'Transcribe'
-    else
-      actionLabel = 'Translate'
+    else actionLabel = 'Translate'
   }
 
   return (

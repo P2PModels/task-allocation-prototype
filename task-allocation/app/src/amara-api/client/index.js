@@ -1,8 +1,8 @@
 import axios from 'axios'
 
-const PORT = 5000
-const HOST =
-  process.env.NODE_ENV !== 'production' ? 'localhost' : '192.168.1.123'
+// const PORT = 5000
+// const HOST =
+//   process.env.NODE_ENV !== 'production' ? 'localhost' : '192.168.1.123'
 // const baseURL = `http://${HOST}:${PORT}/api`
 const baseURL = ``
 const headers = { 'X-api-key': '' }
@@ -13,7 +13,7 @@ const instance = axios.create({
 })
 
 function setApiKeyHeader(apiKey) {
-  instance.defaults.headers['X-api-key'] = apiKey  
+  instance.defaults.headers['X-api-key'] = apiKey
 }
 
 function setBaseUrl(url) {
