@@ -1,0 +1,19 @@
+{
+    "env": {
+        "commonjs": true,
+        "es2020": true,
+        "node": true
+    },
+    "extends": [
+        "standard",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": [
+        "prettier"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 11
+    },
+    "rules": {
+    }
+}
