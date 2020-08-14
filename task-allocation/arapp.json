@@ -2,7 +2,7 @@
   "roles": [
     {
       "name": "Assign tasks",
-      "id": "ASSIGN_TASK_ROLE",
+      "id": "ALLOCATE_TASK_ROLE",
       "params": []
     }
   ],
@@ -27,5 +27,5 @@
       "network": "mainnet"
     }
   },
-  "path": "contracts/TaskAllocationApp.sol"
+  "path": "contracts/allocation-models/RoundRobinApp.sol"
 }
