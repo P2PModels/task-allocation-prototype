@@ -56,61 +56,9 @@ app.store(async (state, { event, returnValues }) => {
       // ROUND ROBIN
       case TASK_ALLOCATED: {
         return taskAllocated(nextState, returnValues)
-        // const {
-        //   userId: userIdHex,
-        //   taskId: taskIdHex,
-        //   previousUserId: oldUserIdHex,
-        //   reallocationTime,
-        // } = returnValues
-        // const userId = hexToString(userIdHex)
-        // const taskId = hexToString(taskIdHex)
-        // const oldUserId = hexToString(oldUserIdHex)
-        // const oldUserAcceptedTasks = getUserAcceptedTasks(nextState, oldUserId)
-        // const oldUserAvailableTasks = getUserAvailableTasks(
-        //   nextState,
-        //   oldUserId
-        // )
-        // const userAcceptedTasks = getUserAcceptedTasks(nextState, userId)
-        // const userAvailableTasks = getUserAvailableTasks(nextState, userId)
-
-        // return {
-        //   ...nextState,
-        //   tasks: {
-        //     ...nextState.tasks,
-        //     [oldUserId]: {
-        //       availableTasks: oldUserAvailableTasks.filter(
-        //         ({ id }) => id !== taskId
-        //       ),
-        //       acceptedTasks: oldUserAcceptedTasks,
-        //     },
-        //     [userId]: {
-        //       availableTasks: userAvailableTasks
-        //         .filter(({ id }) => id !== taskId)
-        //         .push({ id: taskId, time: new Date(reallocationTime * 1000) }),
-        //       acceptedTasks: userAcceptedTasks,
-        //     },
-        //   },
-        // }
       }
       case TASK_ACCEPTED: {
         return taskAccepted(nextState, returnValues)
-        // const { userId: userIdHex, taskId: taskIdHex } = returnValues
-        // const userId = hexToString(userIdHex)
-        // const taskId = hexToString(taskIdHex)
-        // const userAcceptedTasks = getUserAcceptedTasks(nextState, userId)
-        // const userAvailableTasks = getUserAvailableTasks(nextState, userId)
-        // return {
-        //   ...nextState,
-        //   tasks: {
-        //     ...nextState.tasks,
-        //     [userId]: {
-        //       availableTasks: userAvailableTasks.filter(
-        //         ({ id }) => id !== taskId
-        //       ),
-        //       acceptedTasks: [...userAcceptedTasks, { id: taskId }],
-        //     },
-        //   },
-        // }
       }
       case events.SYNC_STATUS_SYNCING:
         return { ...nextState, isSyncing: true }
