@@ -8,10 +8,8 @@ class UserRepository {
 
     return new Promise((resolve, reject) => {
       this.dao.run(sql, [active, id], err => {
-        if(err)
-          reject(err)
-        else
-          resolve(this.changes)
+        if (err) reject(err)
+        else resolve(this.changes)
       })
     })
   }
@@ -33,16 +31,14 @@ class UserRepository {
     const sql = 'SELECT * FROM users u WHERE u.username = ?'
     let user
 
-    let res = await this.dao.all(sql, [username])
-    if(res && res.length) {
+    const res = await this.dao.all(sql, [username])
+    if (res && res.length) {
       user = res[0]
-      let teams = await this.readUserTeams(username)
-      let languages = await this.readUserLanguages(user.id)
+      const teams = await this.readUserTeams(username)
+      const languages = await this.readUserLanguages(user.id)
       user.teams = teams
       user.languages = languages
-    }
-    else
-      user = {}
+    } else user = {}
 
     return user
   }
