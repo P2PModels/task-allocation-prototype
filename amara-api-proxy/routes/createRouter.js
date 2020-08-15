@@ -2,7 +2,7 @@ const glob = require('glob')
 const Router = require('express').Router
 
 
-/* Every /apu/something call will be redirected to rootRouter, 
+/* Every /api/something call will be redirected to rootRouter, 
 and the rootRouter will redirect the call to the child router 
  /something */
 module.exports = () => glob
