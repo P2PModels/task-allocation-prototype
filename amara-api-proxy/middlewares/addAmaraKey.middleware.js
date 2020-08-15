@@ -1,4 +1,4 @@
-const axios = require('../routes/api/axios')
+const axios = require('../axios')
 const { API_HEADER_KEY } = require('../utils/amara-utils')
 
 module.exports = function amaraKeyHandler(req, res, next) {

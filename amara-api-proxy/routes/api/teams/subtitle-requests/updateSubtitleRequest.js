@@ -1,5 +1,5 @@
 const Router = require('express').Router
-const axios = require('../../axios')
+const axios = require('../../../../axios')
 
 module.exports = Router({ mergeParams: true })
     .put('/teams/:slug/subtitle-requests/:jobId', async (req, res, next) => {
