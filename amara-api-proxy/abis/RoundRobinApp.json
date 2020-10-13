@@ -2,6 +2,20 @@
   {
     "constant": true,
     "inputs": [],
+    "name": "MAX_ALLOCATED_TASKS",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
     "name": "hasInitialized",
     "outputs": [
       {
@@ -26,6 +40,10 @@
       {
         "name": "endDate",
         "type": "uint256"
+      },
+      {
+        "name": "status",
+        "type": "uint8"
       }
     ],
     "payable": false,
@@ -72,25 +90,6 @@
       {
         "name": "",
         "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_userId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getUserIndex",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
       }
     ],
     "payable": false,
@@ -168,8 +167,12 @@
     "name": "getUser",
     "outputs": [
       {
-        "name": "",
+        "name": "available",
         "type": "bool"
+      },
+      {
+        "name": "benefits",
+        "type": "uint256"
       }
     ],
     "payable": false,
@@ -330,17 +333,17 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "getUsersCount",
-    "outputs": [
+    "constant": false,
+    "inputs": [
       {
-        "name": "",
-        "type": "uint256"
+        "name": "_taskId",
+        "type": "bytes32"
       }
     ],
+    "name": "createTask",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -355,24 +358,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_userId",
-        "type": "bytes32"
-      },
-      {
-        "name": "_taskId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "createTask",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -418,23 +403,34 @@
     "type": "function"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
-        "name": "_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "getUserByIndex",
-    "outputs": [
+        "name": "_taskId",
+        "type": "bytes32"
+      },
       {
-        "name": "",
+        "name": "_userId",
         "type": "bytes32"
       }
     ],
+    "name": "allocateTask",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "taskId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "TaskCreated",
+    "type": "event"
   },
   {
     "anonymous": false,

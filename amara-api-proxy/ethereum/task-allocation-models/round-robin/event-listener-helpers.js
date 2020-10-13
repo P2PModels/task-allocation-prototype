@@ -7,13 +7,14 @@ const { getRRContract } = require('./round-robin')
 const rrContract = getRRContract()
 
 const USER_REGISTERED = 'UserRegistered'
+const TASK_CREATED = 'TaskCreated'
 const TASK_ALLOCATED = 'TaskAllocated'
 const TASK_ACCEPTED = 'TaskAccepted'
 const TASK_REJECTED = 'TaskRejected'
 
 const cronJobs = new Map()
 
-async function userRegistered(err, { returnValues: { userId } }) {
+async function userRegisteredHandler(err, { returnValues: { userId } }) {
   if (err) console.error(err)
   else {
     console.log(
@@ -22,10 +23,21 @@ async function userRegistered(err, { returnValues: { userId } }) {
   }
 }
 
-async function taskAllocated(err, { returnValues: { taskId, userId } }) {
+async function taskCreatedHandler(err, { returnValues: { taskId } }) {
   if (err) console.error(err)
   else {
-    const reallocationTime = await rrContract.methods.getTask(taskId).call()
+    console.log(
+      `TaskCreated event received: Task ${hexToAscii(taskId)} created`
+    )
+  }
+}
+
+async function taskAllocatedHandler(err, { returnValues: { taskId, userId } }) {
+  if (err) console.error(err)
+  else {
+    const { 0: reallocationTime } = await rrContract.methods
+      .getTask(taskId)
+      .call()
     console.log(
       `TaskAllocated event received: Task ${hexToAscii(
         taskId
@@ -46,7 +58,7 @@ async function taskAllocated(err, { returnValues: { taskId, userId } }) {
   }
 }
 
-async function taskRejected(err, { returnValues: { taskId, userId } }) {
+async function taskRejectedHandler(err, { returnValues: { taskId, userId } }) {
   if (err) console.error(err)
   else {
     console.log(
@@ -57,7 +69,7 @@ async function taskRejected(err, { returnValues: { taskId, userId } }) {
   }
 }
 
-function taskAccepted(err, event) {
+function taskAcceptedHandler(err, event) {
   const { taskId, userId } = event.returnValues
   if (err) console.error(err)
   else {
@@ -90,8 +102,10 @@ function createReallocationCronJob(taskId, timestamp) {
 }
 
 exports.setUpEventListeners = () => {
-  rrContract.events[USER_REGISTERED]({}, userRegistered)
-  rrContract.events[TASK_ALLOCATED]({}, taskAllocated)
-  rrContract.events[TASK_ACCEPTED]({}, taskAccepted)
-  rrContract.events[TASK_REJECTED]({}, taskRejected)
+  console.log('Running round robin contract event listeners')
+  rrContract.events[USER_REGISTERED]({}, userRegisteredHandler)
+  rrContract.events[TASK_CREATED]({}, taskCreatedHandler)
+  rrContract.events[TASK_ALLOCATED]({}, taskAllocatedHandler)
+  rrContract.events[TASK_ACCEPTED]({}, taskAcceptedHandler)
+  rrContract.events[TASK_REJECTED]({}, taskRejectedHandler)
 }

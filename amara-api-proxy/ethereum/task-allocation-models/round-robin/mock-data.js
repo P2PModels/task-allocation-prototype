@@ -1,14 +1,5 @@
-const axios = require('../../../axios')
-const { web3 } = require('../../web3')
-
-const { AMARA_STAGING_API_KEY } = require('../../../config')
-const { API_HEADER_KEY } = require('../../../utils/amara-utils')
-
-const { getRRContract } = require('./round-robin')
-const rrContract = getRRContract()
-
-const AMARA_TEAM = 'collab-demo-team'
-const USER_ACCOUNTS = [
+exports.team = 'collab-demo-team'
+exports.users = [
   'p2pmodels.user1',
   'p2pmodels.user2',
   'p2pmodels.user3',
@@ -16,56 +7,518 @@ const USER_ACCOUNTS = [
   'p2pmodels.user5',
   'p2pmodels.user6',
 ]
-
-async function getInitialTasks(team) {
-  const {
-    data: { objects: assignments },
-  } = await axios.get(
-    `/teams/${team}/subtitle-requests/?work_status=needs-subtitler`,
-    { headers: { [API_HEADER_KEY]: AMARA_STAGING_API_KEY } }
-  )
-  const tasksIds = assignments.map(({ job_id: taskId }) => taskId)
-
-  return tasksIds.slice(0, 5)
-}
-
-async function registerMockUserAccounts(userAccounts) {
-  const batch = new web3.BatchRequest()
-  userAccounts.forEach(acc => {
-    const hexUser = web3.utils.toHex(acc)
-    batch.add(
-      rrContract.methods.registerUser(hexUser).send.request({}, err => {
-        if (err) console.error(err)
-      })
-    )
-  })
-  batch.execute()
-}
-
-async function createMockTasks(tasks, userAccounts) {
-  const batch = new web3.BatchRequest()
-  tasks.forEach(id => {
-    const randomUser =
-      userAccounts[Math.floor(Math.random() * userAccounts.length)]
-    const hexId = web3.utils.toHex(id)
-    const hexUser = web3.utils.toHex(randomUser)
-    batch.add(
-      rrContract.methods.createTask(hexUser, hexId).send.request({}, err => {
-        if (err) console.error(err)
-      })
-    )
-  })
-  batch.execute()
-}
-
-exports.generateMockData = async () => {
-  try {
-    // Register amara users
-    registerMockUserAccounts(USER_ACCOUNTS)
-    const tasks = await getInitialTasks(AMARA_TEAM)
-    // Created tasks
-    createMockTasks(tasks, USER_ACCOUNTS)
-  } catch (err) {
-    console.error(`There has been an error trying to mock data ${err}`)
-  }
-}
+exports.tasks = [
+  {
+    job_id: 'JS4TMAF',
+    video: 'MsVoQB3DTAdZ',
+    language: 'de',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/languages/de/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/languages/de/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/JS4TMAF/',
+  },
+  {
+    job_id: '0UTJG1S',
+    video: 'MsVoQB3DTAdZ',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/MsVoQB3DTAdZ/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/0UTJG1S/',
+  },
+  {
+    job_id: '9AR30EW',
+    video: 'mjgA8CA8ieBU',
+    language: 'es',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/mjgA8CA8ieBU/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/es/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/es/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/9AR30EW/',
+  },
+  {
+    job_id: 'TNEYKA0',
+    video: 'mjgA8CA8ieBU',
+    language: 'de',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/mjgA8CA8ieBU/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/de/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/de/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/TNEYKA0/',
+  },
+  {
+    job_id: '6JZEHRD',
+    video: 'mjgA8CA8ieBU',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/mjgA8CA8ieBU/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/mjgA8CA8ieBU/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/6JZEHRD/',
+  },
+  {
+    job_id: 'ZLQXECO',
+    video: 'Lv8e3TOV5hgt',
+    language: 'pt-br',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/pt-br/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/pt-br/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/ZLQXECO/',
+  },
+  {
+    job_id: '81SWDUN',
+    video: 'Lv8e3TOV5hgt',
+    language: 'es',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/es/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/es/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/81SWDUN/',
+  },
+  {
+    job_id: 'R1P46JD',
+    video: 'Lv8e3TOV5hgt',
+    language: 'de',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/de/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/de/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/R1P46JD/',
+  },
+  {
+    job_id: 'YQNTOE8',
+    video: 'Lv8e3TOV5hgt',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/Lv8e3TOV5hgt/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/YQNTOE8/',
+  },
+  {
+    job_id: 'DIN0CR4',
+    video: 'RaHOKcg5Ic6f',
+    language: 'pt-br',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: '2020-02-11T17:00:00Z',
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/pt-br/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/pt-br/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/DIN0CR4/',
+  },
+  {
+    job_id: 'FNS0IZU',
+    video: 'RaHOKcg5Ic6f',
+    language: 'de',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: '2020-02-12T17:00:00Z',
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/de/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/de/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/FNS0IZU/',
+  },
+  {
+    job_id: 'TPO2QGA',
+    video: 'RaHOKcg5Ic6f',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/RaHOKcg5Ic6f/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/TPO2QGA/',
+  },
+  {
+    job_id: '34JTFHG',
+    video: 't8qrxmpPhd6O',
+    language: 'pt-br',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/t8qrxmpPhd6O/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/t8qrxmpPhd6O/languages/pt-br/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/t8qrxmpPhd6O/languages/pt-br/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/34JTFHG/',
+  },
+  {
+    job_id: 'MUI2KR7',
+    video: 't8qrxmpPhd6O',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/t8qrxmpPhd6O/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/t8qrxmpPhd6O/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/t8qrxmpPhd6O/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/MUI2KR7/',
+  },
+  {
+    job_id: 'O6LTVQW',
+    video: 'FnokmryzlKEH',
+    language: 'pt-br',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/FnokmryzlKEH/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/pt-br/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/pt-br/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/O6LTVQW/',
+  },
+  {
+    job_id: 'WPUNMY0',
+    video: 'FnokmryzlKEH',
+    language: 'es',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/FnokmryzlKEH/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/es/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/es/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/WPUNMY0/',
+  },
+  {
+    job_id: 'WXZSM40',
+    video: 'FnokmryzlKEH',
+    language: 'de',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-29T22:40:28Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/FnokmryzlKEH/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/de/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/de/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/WXZSM40/',
+  },
+  {
+    job_id: 'YCFVZKP',
+    video: 'FnokmryzlKEH',
+    language: 'ae',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-25T15:01:20Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/FnokmryzlKEH/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/ae/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/ae/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/YCFVZKP/',
+  },
+  {
+    job_id: 'F0WR638',
+    video: 'FnokmryzlKEH',
+    language: 'fr',
+    source_team: 'collab-demo-team',
+    team: 'collab-demo-team',
+    evaluation_teams: [],
+    status: 'in-progress',
+    work_status: 'needs-subtitler',
+    subtitler: null,
+    reviewer: null,
+    approver: null,
+    created: '2018-10-20T18:38:15Z',
+    subtitles_due_date: null,
+    review_due_date: null,
+    approval_due_date: null,
+    due_date: null,
+    completed: null,
+    work_completed: null,
+    video_uri: 'https://staging.amara.org/api/videos/FnokmryzlKEH/',
+    subtitles_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/fr/subtitles/',
+    actions_uri:
+      'https://staging.amara.org/api/videos/FnokmryzlKEH/languages/fr/subtitles/actions/',
+    resource_uri:
+      'https://staging.amara.org/api/teams/collab-demo-team/subtitle-requests/F0WR638/',
+  },
+]
