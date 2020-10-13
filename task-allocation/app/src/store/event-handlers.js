@@ -1,4 +1,4 @@
-import { ADD_TASK, REMOVE_TASK, updateTasks } from './helpers'
+import { ADD_TASK, REMOVE_TASK, updateTasks, UPDATE_TASK } from './helpers'
 
 export async function taskAllocated(state, returnValues) {
   const { tasks = {} } = state
@@ -16,6 +16,17 @@ export async function taskAllocated(state, returnValues) {
           ...userTasks,
           availableTasks: [...userTasks.availableTasks, task],
         }
+      case UPDATE_TASK: {
+        const foundTaskIndex = userTasks.availableTasks.findIndex(
+          t => t.id === task.id
+        )
+        if (foundTaskIndex >= 0) {
+          userTasks.availableTasks[foundTaskIndex] = { ...task }
+        }
+        return {
+          ...userTasks,
+        }
+      }
     }
   }
   return {

@@ -6,6 +6,7 @@ import { hexPropertiesToString, retryEvery } from './utils'
 export const INITIAL_USER_TASKS = { availableTasks: [], acceptedTasks: [] }
 export const ADD_TASK = Symbol('ADD_TASK')
 export const REMOVE_TASK = Symbol('REMOVE_TASK')
+export const UPDATE_TASK = Symbol('UPDATE_TASK')
 
 export async function updateTasks(tasks, returnValues, transform) {
   const { taskId: hexTaskId } = returnValues
@@ -14,12 +15,16 @@ export async function updateTasks(tasks, returnValues, transform) {
   const task = await loadTaskData(hexTaskId)
   const userTasks = getUserTasks(tasks, userId)
 
-  newTasks[userId] = transform(userTasks, task, ADD_TASK)
-
   if (previousUserId) {
+    if (previousUserId === userId) {
+      newTasks[userId] = transform(userTasks, task, UPDATE_TASK)
+      return newTasks
+    }
     const previousUserTasks = getUserTasks(tasks, previousUserId)
     newTasks[previousUserId] = transform(previousUserTasks, task, REMOVE_TASK)
   }
+
+  newTasks[userId] = transform(userTasks, task, ADD_TASK)
 
   return newTasks
 }
@@ -29,11 +34,11 @@ export function loadTaskData(taskId) {
     app
       .call('getTask', taskId)
       .toPromise()
-      .then(endDate => {
+      .then(taskData => {
         return {
           // ...removeNumberProperties(task),
           id: hexToString(taskId),
-          endDate: new Date(1000 * endDate),
+          endDate: new Date(1000 * taskData['0']),
         }
       })
       .catch(err => {
