@@ -16,62 +16,75 @@ const {
 
 const { taskAllocated, taskAccepted } = eventHandlers
 
-app.store(async (state, { event, returnValues }) => {
-  const nextState = {
-    ...state,
-  }
-  console.log(event)
-  try {
-    switch (event) {
-      case ACCOUNT_DISCONNECTED:
-        app.cache('amara', null).toPromise()
-        return { ...nextState, amara: null }
-      case ACCOUNT_SELECTED: {
-        const { amara } = returnValues
-        app.cache('amara', amara).toPromise()
-        return { ...nextState, amara }
-      }
-      case API_URL_SET: {
-        const { apiUrl } = returnValues
-        return { ...nextState, apiUrl }
-      }
-      case TASK_ASSIGNED: {
-        const { userId, taskId } = returnValues
-        const userTasks =
-          nextState.tasks && nextState.tasks[userId]
-            ? nextState.tasks[userId]
-            : []
-        return {
-          ...nextState,
-          tasks: { ...nextState.tasks, [userId]: [...userTasks, taskId] },
-        }
-      }
-      case TASKS_RESTART: {
-        return {
-          tasks: {},
-          apiUrl: nextState.apiUrl,
-          amara: { ...nextState.amara },
-        }
-      }
-      // ROUND ROBIN
-      case TASK_ALLOCATED: {
-        return taskAllocated(nextState, returnValues)
-      }
-      case TASK_ACCEPTED: {
-        return taskAccepted(nextState, returnValues)
-      }
-      case events.SYNC_STATUS_SYNCING:
-        return { ...nextState, isSyncing: true }
-      case events.SYNC_STATUS_SYNCED:
-        return { ...nextState, isSyncing: false }
-      default:
-        return state
+app.store(
+  async (state, { event, returnValues }) => {
+    const nextState = {
+      ...state,
     }
-  } catch (err) {
-    console.log(err)
-  }
-})
+    console.log(event)
+    try {
+      switch (event) {
+        case ACCOUNT_DISCONNECTED:
+          app.cache('amara', null).toPromise()
+          return { ...nextState, amara: null }
+        case ACCOUNT_SELECTED: {
+          const { amara } = returnValues
+          app.cache('amara', amara).toPromise()
+          return { ...nextState, amara }
+        }
+        case API_URL_SET: {
+          const { apiUrl } = returnValues
+          return { ...nextState, apiUrl }
+        }
+        case TASK_ASSIGNED: {
+          const { userId, taskId } = returnValues
+          const userTasks =
+            nextState.tasks && nextState.tasks[userId]
+              ? nextState.tasks[userId]
+              : []
+          return {
+            ...nextState,
+            tasks: { ...nextState.tasks, [userId]: [...userTasks, taskId] },
+          }
+        }
+        case TASKS_RESTART: {
+          return {
+            tasks: {},
+            apiUrl: nextState.apiUrl,
+            amara: { ...nextState.amara },
+          }
+        }
+        // ROUND ROBIN
+        case TASK_ALLOCATED: {
+          return taskAllocated(nextState, returnValues)
+        }
+        case TASK_ACCEPTED: {
+          return taskAccepted(nextState, returnValues)
+        }
+        case events.SYNC_STATUS_SYNCING:
+          return { ...nextState, isSyncing: true }
+        case events.SYNC_STATUS_SYNCED:
+          return { ...nextState, isSyncing: false }
+        default:
+          return state
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  },
+  { init: initializeState() }
+)
 
+function initializeState() {
+  return async cachedState => {
+    console.log('Cached State:')
+    console.log(cachedState)
+    return {
+      ...cachedState,
+      isSyncing: true,
+    }
+  }
+}
 /***********************
  *   Initializer Function    *
  ***********************/
