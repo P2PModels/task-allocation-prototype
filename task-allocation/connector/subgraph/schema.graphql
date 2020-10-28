@@ -1,0 +1,50 @@
+type Config @entity {
+  id: ID!
+  maxAllocatedTasks: Int!
+  appAddress: Bytes!
+  orgAddress: Bytes!
+}
+
+type Task @entity {
+  id: ID!
+  endDate: BigInt!
+  status: TaskStatus!
+  reallocationTime: BigInt!
+  assignee: User
+  rejecterUsers: [UserRejectedTask]! @derivedFrom(field: "task")
+  appAddress: Bytes!
+  orgAddress: Bytes!
+}
+
+type User @entity {
+  id: ID!
+  benefits: BigInt!
+  available: Boolean!
+  allocatedTasks: [Task!]! @derivedFrom(field: "assignee")
+  acceptedTasks: [Task!]! @derivedFrom(field: "assignee")
+  rejectedTasks: [UserRejectedTask]! @derivedFrom(field: "user")
+  appAddress: Bytes!
+  orgAddress: Bytes!
+}
+
+type UserRejectedTask @entity {
+  id: ID!
+  user: User!
+  task: Task!
+}
+
+type AragonInfo @entity {
+  id: ID!
+  orgs: [Bytes!]!
+  apps: [Bytes!]!
+  tokens: [Bytes!]!
+}
+
+enum TaskStatus {
+  NonExistent
+  Available
+  Assigned
+  Accepted
+  Rejected
+  Completed
+}
