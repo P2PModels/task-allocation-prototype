@@ -1,0 +1,27 @@
+{
+  "name": "eth-manager",
+  "version": "1.0.0",
+  "description": "Node.js service responsible of listening Round Robin contract events and creating transactions to reallocate tasks",
+  "main": "index.js",
+  "scripts": {
+    "create-mock-data:local": "scripts/create-mock-data.js --network local",
+    "create-mock-data:rinkeby": "scripts/create-mock-data.js --network rinkeby",
+    "start:local": "scripts/start-event-listeners.js --network local",
+    "start:rinkeby": "scripts/start-event-listeners.js --network rinkeby",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ethereum",
+    "web3"
+  ],
+  "author": "P2P Models",
+  "license": "ISC",
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "cron": "^1.8.2",
+    "dotenv": "^8.2.0",
+    "web3": "^1.3.0",
+    "winston": "^3.3.3",
+    "yargs": "^16.1.0"
+  }
+}
