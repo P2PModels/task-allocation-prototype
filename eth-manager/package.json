@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Node.js service responsible of listening Round Robin contract events and creating transactions to reallocate tasks",
   "main": "index.js",
+  "engines": {
+    "node": "10.15.3"
+  },
   "scripts": {
     "create-mock-data:local": "scripts/create-mock-data.js --network local",
     "create-mock-data:rinkeby": "scripts/create-mock-data.js --network rinkeby",
