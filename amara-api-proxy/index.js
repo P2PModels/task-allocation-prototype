@@ -1,21 +1,7 @@
-// const { exec } = require('child_process')
-const nodemon = require('nodemon')
-const ngrok = require('ngrok')
-
-const { web3 } = require('./ethereum/web3')
-const {
-  setUpEventListeners,
-} = require('./ethereum/task-allocation-models/round-robin/event-listener-helpers')
+// const nodemon = require('nodemon')
+// const ngrok = require('ngrok')
 const { PORT } = require('./config')
-
-const app = require('./createExpressApp')()
-
-function runServer(port) {
-  app.listen(port, async err => {
-    if (err) console.log(`Couldn't run server. ${err.message}`)
-    else console.log(`App has started on port ${port}`)
-  })
-}
+const { runServer } = require('./app')
 
 runServer(PORT)
 
@@ -46,7 +32,3 @@ runServer(PORT)
 //     }
 //   }
 // )
-
-// const killProcessOnPortCommand = port => {
-//   return `kill -9 $(lsof -n -i :${port} | grep LISTEN | awk '{print $2}')`
-// }
