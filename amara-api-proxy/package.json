@@ -17,6 +17,7 @@
   "author": "P2P Models",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -25,8 +26,10 @@
     "ethers": "^5.0.5",
     "express": "^4.17.1",
     "glob": "^7.1.6",
+    "morgan": "^1.10.0",
     "prettier": "2.0.5",
-    "sqlite3": "^4.1.1"
+    "sqlite3": "^4.1.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "eslint": "^7.4.0",

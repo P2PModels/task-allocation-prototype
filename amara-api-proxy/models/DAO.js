@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose()
+const logger = require('../winston')
 
 class DAO {
   constructor(dbPath) {
@@ -6,8 +7,8 @@ class DAO {
       `${dbPath}.db`,
       sqlite3.OPEN_READWRITE,
       err => {
-        if (err) console.error(`Could not connect to the  database`, err)
-        else console.log(`Connected to the database`)
+        if (err) logger.error(`Could not connect to the  database ${err}`)
+        else logger.info(`Demo data database set up`)
       }
     )
   }
