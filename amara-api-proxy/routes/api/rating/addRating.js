@@ -7,7 +7,7 @@ module.exports = Router({ mergeParams: true }).post(
     try {
       const { userId, date, score } = req.body
       const lastId = await db.daoRatings.createRating(userId, date, score)
-      console.log(userId, date, score)
+
       return res.json({ lastId })
     } catch (error) {
       next(error)
