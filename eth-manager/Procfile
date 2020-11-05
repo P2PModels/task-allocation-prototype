@@ -1,0 +1,1 @@
+eth-manager: node scripts/start-event-listeners.js --network rinkeby
