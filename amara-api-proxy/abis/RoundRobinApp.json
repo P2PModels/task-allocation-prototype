@@ -33,10 +33,41 @@
       {
         "name": "_taskId",
         "type": "bytes32"
+      },
+      {
+        "name": "_userId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRejecter",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_taskId",
+        "type": "bytes32"
       }
     ],
     "name": "getTask",
     "outputs": [
+      {
+        "name": "assignee",
+        "type": "bytes32"
+      },
+      {
+        "name": "allocationIndex",
+        "type": "uint256"
+      },
       {
         "name": "endDate",
         "type": "uint256"
@@ -44,6 +75,24 @@
       {
         "name": "status",
         "type": "uint8"
+      },
+      {
+        "name": "reallocationTime",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "RESTART_APP_ROLE",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -162,16 +211,83 @@
       {
         "name": "_userId",
         "type": "bytes32"
+      },
+      {
+        "name": "_taskIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAllocatedTask",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_userId",
+        "type": "bytes32"
       }
     ],
     "name": "getUser",
     "outputs": [
       {
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "name": "benefits",
+        "type": "uint256"
+      },
+      {
         "name": "available",
         "type": "bool"
       },
       {
-        "name": "benefits",
+        "name": "exists",
+        "type": "bool"
+      },
+      {
+        "name": "allocatedTasksLength",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_taskId",
+        "type": "bytes32"
+      },
+      {
+        "name": "reallocationTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "createTask",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getUserLength",
+    "outputs": [
+      {
+        "name": "",
         "type": "uint256"
       }
     ],
@@ -264,20 +380,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "reallocationTime",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -333,17 +435,17 @@
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
+    "constant": true,
+    "inputs": [],
+    "name": "CREATE_TASK_ROLE",
+    "outputs": [
       {
-        "name": "_taskId",
+        "name": "",
         "type": "bytes32"
       }
     ],
-    "name": "createTask",
-    "outputs": [],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -382,6 +484,20 @@
       {
         "name": "",
         "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "CREATE_USER_ROLE",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "payable": false,
@@ -430,6 +546,18 @@
       }
     ],
     "name": "TaskCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "taskId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "TaskDeleted",
     "type": "event"
   },
   {
@@ -498,6 +626,18 @@
       }
     ],
     "name": "UserRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "userId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UserDeleted",
     "type": "event"
   },
   {
