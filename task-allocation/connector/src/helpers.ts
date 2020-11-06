@@ -1,7 +1,7 @@
-export function buildTaskId(appAddress: string, taskId: string) {
+export function buildTaskEntityId(appAddress: string, taskId: string) {
   return `appAddress:${appAddress}-taskId:${taskId}`
 }
 
-export function buildUserId(appAddress: string, userId: string) {
-  return `appAddress:${appAddress}-taskId:${userId}`
+export function buildUserEntityId(appAddress: string, userId: string) {
+  return `appAddress:${appAddress}-userId:${userId}`
 }
