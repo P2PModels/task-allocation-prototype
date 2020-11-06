@@ -10,8 +10,8 @@ import RoundRobinConnectorTheGraph, {
 } from './thegraph/connector'
 
 type Config = {
-  pollInterval?: number
   subgraphUrl?: string
+  pollInterval?: number
 }
 
 export default createAppConnector<RoundRobin, Config>(
@@ -22,15 +22,17 @@ export default createAppConnector<RoundRobin, Config>(
       )
     }
 
-    if (app.name !== 'ta-round-robin.open.aragonpm.eth') {
+    if (app.name !== 'ta-round-robin') {
       throw new ErrorInvalidApp(
-        `This app (${app.name}) is not compatible with connect-roundrobin. ` +
+        `This app (${app.name}) is not compatible with this round robin connector. ` +
           `Please use an app instance of the ta-round-robin.open.aragonpm.eth repo.`
       )
     }
 
     const subgraphUrl =
-      config.subgraphUrl ?? subgraphUrlFromChainId(network.chainId) ?? undefined
+      config?.subgraphUrl ??
+      subgraphUrlFromChainId(network.chainId) ??
+      undefined
 
     if (!subgraphUrl) {
       throw new ErrorInvalidNetwork(
