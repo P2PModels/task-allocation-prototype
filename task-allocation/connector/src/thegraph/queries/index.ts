@@ -24,10 +24,8 @@ export const USER_TASKS_BY_STATUS = (type: string) => gql`
 `
 
 export const USER = (type: string) => gql`
-  ${type} Users($id: String!) {
-    users(where: {
-      id: $id
-    }) {
+  ${type} User($id: String!) {
+    user(id: $id) {
       id
       benefits
       available

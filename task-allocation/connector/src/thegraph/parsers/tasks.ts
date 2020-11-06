@@ -1,7 +1,7 @@
 import { QueryResult } from '@aragon/connect-thegraph'
-import { ErrorUnexpectedResult } from 'src/errors'
-import Task from 'src/models/Task'
-import { TaskData } from 'src/types'
+import { ErrorUnexpectedResult } from '../../errors'
+import Task from '../../models/Task'
+import { TaskData } from '../../types'
 
 export function parseTasks(result: QueryResult, connector: any): Task[] {
   const tasks = result.data.tasks

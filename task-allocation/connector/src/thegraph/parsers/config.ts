@@ -1,16 +1,14 @@
 import { ErrorUnexpectedResult } from '../../errors'
 import { QueryResult } from '@aragon/connect-thegraph'
-import Config from 'src/models/Config'
+import Config from '../../models/Config'
 
 export function parseConfig(
   result: QueryResult,
   connector: any
 ): Config | null {
-  const configs = result.data.configs
+  const config = result.data.config
 
-  if (!configs) throw new ErrorUnexpectedResult('Unable to parse config.')
-
-  const config = configs[0]
+  if (!config) throw new ErrorUnexpectedResult('Unable to parse config.')
 
   return config ? new Config(config, connector) : null
 }
