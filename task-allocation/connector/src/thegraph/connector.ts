@@ -7,7 +7,7 @@ import Config from '../models/Config'
 import * as queries from './queries'
 
 import { parseConfig, parseTasks, parseUser } from './parsers'
-import { buildUserId } from 'src/helpers'
+import { buildUserEntityId } from '../helpers'
 import { parseRejectedTasks } from './parsers/tasks'
 
 export function subgraphUrlFromChainId(chainId: number): string | null {
@@ -56,8 +56,8 @@ export default class RoundRobinConnectorTheGraph
     )
   }
 
-  async user(appAddress: string, user: string): Promise<User> {
-    const id = buildUserId(appAddress, user)
+  async user(appAddress: string, userId: string): Promise<User> {
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.performQueryWithParser(
       queries.USER('query'),
       { id },
@@ -67,10 +67,10 @@ export default class RoundRobinConnectorTheGraph
 
   onUser(
     appAddress: string,
-    user: string,
+    userId: string,
     callback: SubscriptionCallback<User>
   ): SubscriptionHandler {
-    const id = buildUserId(appAddress, user)
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.subscribeToQueryWithParser(
       queries.USER('subscription'),
       { id },
@@ -86,9 +86,10 @@ export default class RoundRobinConnectorTheGraph
     first: number,
     skip: number
   ): Promise<Task[]> {
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.performQueryWithParser(
       queries.USER_TASKS_BY_STATUS('query'),
-      { appAddress, userId, status, first, skip },
+      { appAddress, userId: id, status, first, skip },
       (result: QueryResult) => parseTasks(result, this)
     )
   }
@@ -101,9 +102,10 @@ export default class RoundRobinConnectorTheGraph
     skip: number,
     callback: SubscriptionCallback<Task[]>
   ): SubscriptionHandler {
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.subscribeToQueryWithParser(
       queries.USER_TASKS_BY_STATUS('subscription'),
-      { appAddress, userId, status, first, skip },
+      { appAddress, userId: id, status, first, skip },
       callback,
       (result: QueryResult) => parseTasks(result, this)
     )
@@ -115,7 +117,7 @@ export default class RoundRobinConnectorTheGraph
     // first: number,
     // skip: number
   ): Promise<Task[]> {
-    const id = buildUserId(appAddress, userId)
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.performQueryWithParser(
       queries.USER_REJECTED_TASKS('query'),
       { id },
@@ -130,7 +132,7 @@ export default class RoundRobinConnectorTheGraph
     // skip: number,
     callback: SubscriptionCallback<Task[]>
   ): SubscriptionHandler {
-    const id = buildUserId(appAddress, userId)
+    const id = buildUserEntityId(appAddress, userId)
     return this.#gql.subscribeToQueryWithParser(
       queries.USER_REJECTED_TASKS('subscription'),
       { id },

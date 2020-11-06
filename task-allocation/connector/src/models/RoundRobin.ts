@@ -21,16 +21,15 @@ export default class RoundRobin {
     return this.#connector.onConfig(this.#address, callback)
   }
 
-  async user(appAddress: string, user: string): Promise<User> {
-    return this.#connector.user(this.#address, user)
+  async user(userId: string): Promise<User> {
+    return this.#connector.user(this.#address, userId)
   }
 
   onUser(
-    appAddress: string,
-    user: string,
+    userId: string,
     callback: SubscriptionCallback<User>
   ): SubscriptionHandler {
-    return this.#connector.onUser(appAddress, user, callback)
+    return this.#connector.onUser(this.#address, userId, callback)
   }
 
   async tasksForUser(
