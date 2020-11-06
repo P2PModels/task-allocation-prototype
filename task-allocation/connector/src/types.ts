@@ -45,10 +45,10 @@ export interface IRoundRobinConnector {
     id: string,
     callback: SubscriptionCallback<Config>
   ): SubscriptionHandler
-  user(appAddress: string, user: string): Promise<User>
+  user(appAddress: string, userId: string): Promise<User>
   onUser(
     appAddress: string,
-    user: string,
+    userId: string,
     callback: SubscriptionCallback<User>
   ): SubscriptionHandler
   tasksForUser(
