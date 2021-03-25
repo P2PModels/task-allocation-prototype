@@ -1,6 +1,10 @@
 import { SubscriptionHandler } from '@aragon/connect-core'
-import { IRoundRobinConnector, SubscriptionCallback, UserData } from '../types'
-import Task from './Task'
+import {
+  IRoundRobinConnector,
+  SubscriptionCallback,
+  UserData,
+  TaskData,
+} from '../types'
 
 export default class User {
   #connector: IRoundRobinConnector
@@ -9,8 +13,8 @@ export default class User {
   readonly benefits: string
   readonly available: boolean
   readonly appAddress: string
-  // readonly allocatedTasks: TaskData[]
-  // readonly acceptedTasks: TaskData[]
+  readonly allocatedTasks: TaskData[]
+  readonly acceptedTasks: TaskData[]
   // readonly rejectedTasks: TaskData[]
 
   constructor(data: UserData, connector: IRoundRobinConnector) {
@@ -20,8 +24,8 @@ export default class User {
     this.benefits = data.benefits
     this.available = data.available
     this.appAddress = data.appAddress
-    // this.allocatedTasks = data.allocatedTasks
-    // this.acceptedTasks = data.acceptedTasks
+    this.allocatedTasks = data.allocatedTasks
+    this.acceptedTasks = data.acceptedTasks
     // this.rejectedTasks = data.rejectedTasks
   }
 

@@ -1,6 +1,6 @@
 import { GraphQLWrapper, QueryResult } from '@aragon/connect-thegraph'
 import { SubscriptionHandler } from '@aragon/connect-core'
-import { SubscriptionCallback, IRoundRobinConnector } from '../types'
+import { SubscriptionCallback, IRoundRobinConnector, Address } from '../types'
 import Task from '../models/Task'
 import User from '../models/User'
 import Config from '../models/Config'
@@ -82,14 +82,14 @@ export default class RoundRobinConnectorTheGraph
   async tasksForUser(
     appAddress: string,
     userId: string,
-    status: string,
+    statuses: number[],
     first: number,
     skip: number
   ): Promise<Task[]> {
     const id = buildUserEntityId(appAddress, userId)
     return this.#gql.performQueryWithParser(
       queries.USER_TASKS_BY_STATUS('query'),
-      { appAddress, userId: id, status, first, skip },
+      { statuses, userId: id, first, skip },
       (result: QueryResult) => parseTasks(result, this)
     )
   }
@@ -97,15 +97,16 @@ export default class RoundRobinConnectorTheGraph
   onTasksForUser(
     appAddress: string,
     userId: string,
-    status: string,
+    statuses: number[],
     first: number,
     skip: number,
     callback: SubscriptionCallback<Task[]>
   ): SubscriptionHandler {
     const id = buildUserEntityId(appAddress, userId)
+
     return this.#gql.subscribeToQueryWithParser(
       queries.USER_TASKS_BY_STATUS('subscription'),
-      { appAddress, userId: id, status, first, skip },
+      { statuses, userId: id, first, skip },
       callback,
       (result: QueryResult) => parseTasks(result, this)
     )

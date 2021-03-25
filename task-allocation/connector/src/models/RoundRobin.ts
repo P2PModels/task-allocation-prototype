@@ -3,6 +3,7 @@ import { SubscriptionCallback, IRoundRobinConnector } from '../types'
 import Config from './Config'
 import Task from './Task'
 import User from './User'
+import { ALL_TASK_STATUSES } from '../types'
 
 export default class RoundRobin {
   #address: Address
@@ -34,13 +35,13 @@ export default class RoundRobin {
 
   async tasksForUser(
     userId: string,
-    status: string,
+    statuses: number[],
     { first = 1000, skip = 0 } = {}
   ): Promise<Task[]> {
     return this.#connector.tasksForUser(
       this.#address,
       userId,
-      status,
+      statuses,
       first,
       skip
     )
@@ -48,14 +49,14 @@ export default class RoundRobin {
 
   onTasksForUser(
     userId: string,
-    status: string,
+    statuses: number[] = ALL_TASK_STATUSES,
     { first = 1000, skip = 0 } = {},
     callback: SubscriptionCallback<Task[]>
   ): SubscriptionHandler {
     return this.#connector.onTasksForUser(
       this.#address,
       userId,
-      status,
+      statuses,
       first,
       skip,
       callback

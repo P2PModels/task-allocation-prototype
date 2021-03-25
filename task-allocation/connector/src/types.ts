@@ -6,6 +6,10 @@ export type SubscriptionHandler = { unsubscribe: () => void }
 export type SubscriptionCallback<T> = (error: Error | null, data?: T) => void
 export type Address = string
 
+export const ALL_TASK_STATUSES = [0, 1, 2, 3, 4, 5]
+export const ASSIGNED_STATUS = 'Assigned'
+export const ACCEPTED_STATUS = 'Accepted'
+
 export interface ConfigData {
   id: string
   maxAllocatedTasks: number
@@ -54,14 +58,14 @@ export interface IRoundRobinConnector {
   tasksForUser(
     appAddress: string,
     userId: string,
-    status: string,
+    statuses: number[],
     first: number,
     skip: number
   ): Promise<Task[]>
   onTasksForUser(
     appAddress: string,
     userId: string,
-    status: string,
+    statuses: number[],
     first: number,
     skip: number,
     callback: SubscriptionCallback<Task[]>
