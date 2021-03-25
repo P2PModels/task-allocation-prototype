@@ -10,10 +10,13 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     /// Events
     event TaskCreated(bytes32 indexed taskId);
+    event TaskDeleted(bytes32 indexed taskId);
     event TaskAccepted(bytes32 indexed userId, bytes32 indexed taskId);
     event TaskRejected(bytes32 indexed userId, bytes32 indexed taskId);
     event TaskAllocated(bytes32 indexed userId, bytes32 indexed taskId, bytes32 previousUserId);
     event UserRegistered(bytes32 indexed userId);
+    event UserDeleted(bytes32 indexed userId);
+    event RejecterDeleted(bytes32 indexed userId, bytes32 indexed taskId);
 
     ///Types
     enum Status {
@@ -27,6 +30,8 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     mapping(bytes32 => Task) tasks;
 
+    bytes32[] taskIds;
+
     mapping(bytes32 => User) users;
     //Need it to transvers users array more gracefuly. 
     mapping(uint256 => bytes32) private userIndex;
@@ -37,8 +42,6 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
      * Key: userId
      */
     mapping(bytes32 => bool) userTaskRegistry;
-
-    uint256 public reallocationTime;
 
     struct User {
         uint256 index;
@@ -51,11 +54,14 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     struct Task {
         uint256 userIndex;
+        // Need this to remove task when being reallocated
         uint256 allocationIndex;
         uint256 endDate;
         Status status;
         // bytes32 languageGroup;
         mapping(bytes32 => bool) rejecters;
+        // Measure in seconds.
+        uint256 reallocationTime;
     }
 
     uint8 constant public MAX_ALLOCATED_TASKS = 3;
@@ -110,11 +116,41 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     function initialize() public onlyInit {
         initialized();
-        // reallocationTime = 1800;
-        reallocationTime = 90;
     }
 
     function restart() external {
+        for (uint i = 0; i < taskIds.length; i++) {
+            bytes32 tId = taskIds[i];
+            Task storage task = tasks[tId];
+
+            // Delete rejecters. Need to empty mapping manually.
+            for (uint j = 0; j < userIndexLength; j++) {
+                bytes32 rId = userIndex[j];
+                task.rejecters[rId] = false;
+                emit RejecterDeleted(rId, tId);
+            }
+
+            task.status = Status.NonExistent;
+
+            emit TaskDeleted(tId);
+        }
+
+        for (uint k = 0; k < userIndexLength; k++) {
+            bytes32 uId = userIndex[k];
+            User storage user = users[uId];
+            user.exists = false;
+            // Need to empty mapping manually. 
+            user.allocatedTasksLength = 0;
+
+            userTaskRegistry[uId] = false;
+
+            emit UserDeleted(uId);
+        }
+
+        delete taskIds;
+
+        userIndexLength = 0;
+
         emit TasksRestart(msg.sender);
     }
 
@@ -126,6 +162,9 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         users[_userId].index = userIndexLength;
         users[_userId].available = true;
         users[_userId].exists = true;
+        users[_userId].benefits = 0;
+        users[_userId].allocatedTasksLength = 0;
+
         userIndexLength = userIndexLength.add(1);
 
         emit UserRegistered(_userId);
@@ -137,14 +176,20 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
      */
     function createTask(
         // bytes32 _languageGroup,
-        bytes32 _taskId
+        bytes32 _taskId,
+        uint256 reallocationTime
     )
     external
     taskDontExist(_taskId)
     {
         Task storage task = tasks[_taskId];
         task.status = Status.Available;
+        task.userIndex = 0;
+        task.allocationIndex = 0;
+        task.endDate = 0;
+        task.reallocationTime = reallocationTime;
 
+        taskIds.push(_taskId);
         emit TaskCreated(_taskId);
     }
 
@@ -176,7 +221,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         //unless It's declare using storage keyword.
         User storage user = users[_userId];
         bytes32 currentTaskId;
-        //Reallocated all user available tasks.
+        //Reallocate all user available tasks.
         for (uint i = 0; i < user.allocatedTasksLength; i++) {
             currentTaskId = user.allocatedTasks[i];
             if (currentTaskId != _taskId) {
@@ -196,7 +241,6 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
     {
         tasks[_taskId].rejecters[_userId] = true;
         emit TaskRejected(_userId, _taskId);
-        reallocateTask(_taskId);
     }
 
     function reallocateTask(
@@ -218,7 +262,6 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
                 newUserIndex = 0;
             }
             bytes32 currUserId = userIndex[newUserIndex];
-            User memory currUser = users[currUserId];
             assigneeFounded = addUserAllocatedTask(currUserId, _taskId);
             if (assigneeFounded) {
                 emit TaskAllocated(userIndex[newUserIndex], _taskId, oldUserId);
@@ -252,7 +295,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
             task.userIndex = user.index;
             task.status = Status.Assigned;
-            task.endDate = block.timestamp.add(reallocationTime);
+            task.endDate = block.timestamp.add(task.reallocationTime);
 
             return true;
         }
@@ -281,32 +324,79 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         user.allocatedTasks[allocatedTaskIndex] = lastTask;
     }
 
+    // Getters
+
     function getUser(
         bytes32 _userId
     )
     external
     view
     returns (
+        uint256 index,
+        uint256 benefits,
         bool available,
-        uint256 benefits
+        bool exists,
+        uint256 allocatedTasksLength
     )
     {
         User memory user = users[_userId];
-        available = user.available;
+        index = user.index;
         benefits = user.benefits;
+        available = user.available;
+        exists = user.exists;
+        allocatedTasksLength = user.allocatedTasksLength;
+    }
+
+    function getAllocatedTask(
+        bytes32 _userId,
+        uint256 _taskIndex
+    )
+    external
+    view
+    returns (
+        bytes32
+    )
+    {
+        return users[_userId].allocatedTasks[_taskIndex];
     }
 
     function getTask(bytes32 _taskId)
     external
     view
-    taskExists(_taskId)
     returns (
+        bytes32 assignee,
+        uint256 allocationIndex,
         uint256 endDate,
-        Status status
+        Status status,
+        uint256 reallocationTime
     ) 
     {
         Task memory task = tasks[_taskId];
+
+        assignee = userIndex[task.userIndex];
+        allocationIndex = task.allocationIndex;
         endDate = task.endDate;
         status = task.status;
+        reallocationTime = task.reallocationTime;
+    }
+
+    function getRejecter(bytes32 _taskId, bytes32 _userId)
+    external
+    view
+    returns (
+        bool
+    )
+    {
+        return tasks[_taskId].rejecters[_userId];
+    }
+
+    function getUserLength()
+    external
+    view
+    returns (
+        uint
+    )
+    {
+        return userIndexLength;
     }
 }
