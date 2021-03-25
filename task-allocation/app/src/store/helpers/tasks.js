@@ -38,7 +38,7 @@ export function loadTaskData(taskId) {
         return {
           // ...removeNumberProperties(task),
           id: hexToString(taskId),
-          endDate: new Date(1000 * taskData['0']),
+          endDate: new Date(1000 * taskData.endDate),
         }
       })
       .catch(err => {

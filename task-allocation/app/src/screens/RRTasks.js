@@ -69,6 +69,9 @@ const RRTasks = ({
       ? usersTasks[username]
       : { availableTasks: [], acceptedTasks: [] }
 
+  // console.log('RRTASKS')
+  // console.log(usersTasks)
+  // console.log(availableTasks)
   useEffect(() => {
     const { teams } = amaraUser
     async function fetchUserTasks(tasks) {
@@ -89,10 +92,20 @@ const RRTasks = ({
       setUserTasksState({ isLoading: true })
       const t0 = performance.now()
       const apiCallPromises = []
-      if (!userTasksState.videos.length) apiCallPromises.push(getVideos())
       apiCallPromises.push(
-        fetchUserTasks(availableTasks),
-        fetchUserTasks(acceptedTasks)
+        !userTasksState.videos.length
+          ? getVideos()
+          : Promise.resolve(userTasksState.videos)
+      )
+      apiCallPromises.push(
+        availableTasks.length
+          ? fetchUserTasks(availableTasks)
+          : Promise.resolve([])
+      )
+      apiCallPromises.push(
+        acceptedTasks.length
+          ? fetchUserTasks(acceptedTasks)
+          : Promise.resolve([])
       )
       const [
         videosRes,
@@ -110,7 +123,7 @@ const RRTasks = ({
       })
     }
 
-    if (!isSyncing && (availableTasks.length || acceptedTasks.length)) {
+    if (!isSyncing) {
       console.log('[RRTasks] useEffect: fetching tasks... ')
       fetchAllUserTasks()
     }
@@ -176,7 +189,7 @@ const RRTasks = ({
       .rejectTask(toHex(username), toHex(id.toString()))
       .toPromise()
       .then(res => {
-        showToast("You've deline the assignment")
+        showToast('Assignment declined')
       })
   }
 
@@ -274,7 +287,7 @@ const RRTasks = ({
               margin-left: 5%;
             `}
           >
-            Fetching assignments...
+            Loading...
           </span>
         </FloatIndicator>
       )}
