@@ -575,6 +575,23 @@
     "inputs": [
       {
         "indexed": true,
+        "name": "userId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "name": "taskId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RejecterDeleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "name": "entity",
         "type": "address"
       }
