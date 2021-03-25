@@ -24,8 +24,7 @@ contract TaskAllocationApp is AragonApp {
     mapping(string => Task) tasks;
 
     bytes32[] languageGroups;
-    string[] users;
-    string[] tasksIds;
+
     /**
      * Key: Language group (en-es).
      * Value:
@@ -41,7 +40,8 @@ contract TaskAllocationApp is AragonApp {
     //If we need to transverse tasks we can use this:
     // mapping(uint256 => bytes32) private taskIndex;
     // uint256 private taskIndexLength;
-
+    string[] userIds;
+    string[] taskIds;
     /// ACL
     bytes32 constant public ASSIGN_TASK_ROLE = keccak256("ASSIGN_TASK_ROLE");
 
@@ -81,12 +81,12 @@ contract TaskAllocationApp is AragonApp {
     auth(ASSIGN_TASK_ROLE)
     {
         if (!userExists(_userId)) {
-            users.push(_userId);
+            userIds.push(_userId);
         }
         if (!languageGroupExists(_languageGroup)) {
             languageGroups.push(_languageGroup);
         }
-        tasksIds.push(_taskId);
+        taskIds.push(_taskId);
 
         taskRegistry[_languageGroup][_userId] = _taskId;
         tasks[_taskId].status = Status.Assigned;
@@ -98,20 +98,20 @@ contract TaskAllocationApp is AragonApp {
     }
 
     function restart() external {
-        for(uint k = 0; k < tasksIds.length; k++) {
-            string memory id = tasksIds[k];
+        for(uint k = 0; k < taskIds.length; k++) {
+            string memory id = taskIds[k];
             tasks[id].status = Status.New;
         }
         for (uint i = 0; i < languageGroups.length; i++) {
             bytes32 lg = languageGroups[i];
-            for (uint j = 0; j < users.length; j++) {
-                string memory u = users[j];
+            for (uint j = 0; j < userIds.length; j++) {
+                string memory u = userIds[j];
                 taskRegistry[lg][u] = "";
             }
         }
-        delete tasksIds;
+        delete taskIds;
         delete languageGroups;
-        delete users;
+        delete userIds;
 
         emit TasksRestart(msg.sender);
     }
@@ -123,8 +123,8 @@ contract TaskAllocationApp is AragonApp {
 
     function userExists(string _userId) private view returns(bool) {
         uint i = 0;
-        while(i < users.length) {
-            if(keccak256(bytes(users[i])) == keccak256(bytes(_userId)))
+        while(i < userIds.length) {
+            if(keccak256(bytes(userIds[i])) == keccak256(bytes(_userId)))
                 return true;
             i++;
         }
