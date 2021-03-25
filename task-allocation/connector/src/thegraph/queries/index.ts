@@ -10,15 +10,18 @@ export const CONFIG = (type: string) => gql`
 `
 
 export const USER_TASKS_BY_STATUS = (type: string) => gql`
-  ${type} Tasks($appAddress: string!, $userId: ID!, $status: string!, $first: Int!, $skip: Int!) {
+  ${type} Tasks($statuses: [Int]!, $userId: ID!, $first: Int!, $skip: Int!) {
     tasks(where: {
-      appAddress: $appAddress,
-      status: $status,
+      statusInt_in: $statuses,
       assignee: $userId
     }, first: $first, skip: $skip) {
       id
       endDate
       reallocationTime
+      status
+      assignee {
+        id
+      }
     }
   } 
 `
