@@ -9,6 +9,7 @@ type Task @entity {
   id: ID!
   endDate: BigInt!
   status: TaskStatus!
+  statusInt: Int!
   reallocationTime: BigInt!
   assignee: User
   rejecterUsers: [UserRejectedTask]! @derivedFrom(field: "task")
@@ -20,8 +21,6 @@ type User @entity {
   id: ID!
   benefits: BigInt!
   available: Boolean!
-  allocatedTasks: [Task!]! @derivedFrom(field: "assignee")
-  acceptedTasks: [Task!]! @derivedFrom(field: "assignee")
   rejectedTasks: [UserRejectedTask]! @derivedFrom(field: "user")
   appAddress: Bytes!
   orgAddress: Bytes!
