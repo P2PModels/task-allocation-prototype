@@ -6,7 +6,12 @@ import {
   UserRejectedTask as UserRejectedTaskEntity,
 } from '../generated/schema'
 import { RoundRobinApp as RoundRobinContract } from '../generated/templates/RoundRobinApp/RoundRobinApp'
-import { getStatusByKey, STATUS_AVAILABLE } from './task-statuses'
+import {
+  getStatusByKey,
+  STATUS_AVAILABLE,
+  STATUS_AVAILABLE_NUM,
+  getIntStatusByKey,
+} from './task-statuses'
 
 // Entity Id Builders
 
@@ -55,6 +60,7 @@ export function populateTaskDataFromContract(
   // }
   task.endDate = taskData.value2
   task.status = getStatusByKey(taskData.value3)
+  task.statusInt = getIntStatusByKey(taskData.value3)
   task.reallocationTime = taskData.value4
 }
 
@@ -92,6 +98,7 @@ export function getTaskEntity(
 
     task.endDate = BigInt.fromI32(0)
     task.status = STATUS_AVAILABLE
+    task.statusInt = STATUS_AVAILABLE_NUM
     task.appAddress = appAddress
     task.orgAddress = getOrgAddress(appAddress)
   }
