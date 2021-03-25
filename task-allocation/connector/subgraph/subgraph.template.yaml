@@ -47,4 +47,6 @@ templates:
           handler: handleUserRegistered
         - event: UserDeleted(indexed bytes32)
           handler: handleUserDeleted
+        - event: RejecterDeleted(indexed bytes32,indexed bytes32)
+          handler: handleRejecterDeleted
       file: ./src/RoundRobinApp.ts
