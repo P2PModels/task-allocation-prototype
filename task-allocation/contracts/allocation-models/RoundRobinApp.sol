@@ -18,7 +18,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
     event UserDeleted(bytes32 indexed userId);
     event RejecterDeleted(bytes32 indexed userId, bytes32 indexed taskId);
 
-    ///Types
+    /// Task statuses
     enum Status {
         NonExistent,
         Available,
@@ -30,14 +30,17 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     mapping(bytes32 => Task) tasks;
 
+    // List of task ids used for restarting purposes
     bytes32[] taskIds;
 
     mapping(bytes32 => User) users;
+
     //Need it to transvers users array more gracefuly. 
     mapping(uint256 => bytes32) private userIndex;
     uint256 private userIndexLength;
 
-    //To keep record of user's assignments. Users only can have 1 task assigned.
+    //To keep record of user's assignments and control that users can only 
+    // have 1 task accepted
     /*
      * Key: userId
      */
@@ -45,9 +48,11 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
 
     struct User {
         uint256 index;
-        uint256 benefits;
+        uint256 benefits;  // <-- to be used in the future to award users for tasks completed
         bool available;
+        // Check if the user exists in the mapping
         bool exists;
+        // List of tasks assigned to the user
         mapping(uint256 => bytes32) allocatedTasks;
         uint256 allocatedTasksLength;
     }
@@ -56,14 +61,19 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         uint256 userIndex;
         // Need this to remove task when being reallocated
         uint256 allocationIndex;
+        // Indicate when the task should be reasigned
         uint256 endDate;
+        // Take one of the statuses value
         Status status;
-        // bytes32 languageGroup;
+        // List of users who rejected the task
         mapping(bytes32 => bool) rejecters;
-        // Measure in seconds.
+        // Indicate how often, in seconds, the task will be reasigned
         uint256 reallocationTime;
+        // bytes32 languageGroup. // <-- to be used in the future
     }
 
+
+    // Indicate the maximum number of tasks that can assigned to users
     uint8 constant public MAX_ALLOCATED_TASKS = 3;
 
     ///Errors
@@ -77,6 +87,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
     string private constant ERROR_TASK_NOT_ASSIGNED_TO_USER = "TASK_NOT_ASSIGNED_TO_USER";
     string private constant ERROR_USER_HAS_TOO_MANY_TASKS = "USER_HAS_TOO_MANY_TASKS";
 
+    // Verification functions
     modifier userHasNoTask(bytes32 _userId) {
         require(!userTaskRegistry[_userId], ERROR_USER_HAS_TASK);
         _;
@@ -102,6 +113,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         _;
     }
 
+    // Check is the task was previously assigned to user
     modifier taskAssigned(bytes32 _taskId, bytes32 _userId) {
         Task memory task = tasks[_taskId];
         bytes32 userId = userIndex[task.userIndex];
@@ -114,27 +126,33 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         _;
     }
 
+    // Contract "constructor"
     function initialize() public onlyInit {
         initialized();
     }
 
+    // Function used to clean up the contract
     function restart() external {
+         // Remove tasks
         for (uint i = 0; i < taskIds.length; i++) {
             bytes32 tId = taskIds[i];
             Task storage task = tasks[tId];
 
-            // Delete rejecters. Need to empty mapping manually.
+            // Delete rejecters of the task. Need to empty mapping manually.
             for (uint j = 0; j < userIndexLength; j++) {
                 bytes32 rId = userIndex[j];
                 task.rejecters[rId] = false;
                 emit RejecterDeleted(rId, tId);
             }
 
+            // Set the status of the task to non-existent
             task.status = Status.NonExistent;
 
+            // Emit an event indicating that task has been deleted
             emit TaskDeleted(tId);
         }
 
+        // Remove users
         for (uint k = 0; k < userIndexLength; k++) {
             bytes32 uId = userIndex[k];
             User storage user = users[uId];
@@ -154,6 +172,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         emit TasksRestart(msg.sender);
     }
 
+    // Function used to register users
     function registerUser(bytes32 _userId)
     external
     userDontExist(_userId)
@@ -171,7 +190,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
     }
 
     /**
-     * @notice Create a new assignment.
+     * @notice Create a new task.
      * @param _taskId The task's id.
      */
     function createTask(
@@ -193,6 +212,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         emit TaskCreated(_taskId);
     }
 
+    // Call the function that assigns a task to a user
     function allocateTask(
         bytes32 _taskId,
         bytes32 _userId
@@ -206,6 +226,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         emit TaskAllocated(_userId, _taskId, 0);
     }
 
+    // Function called when a user accepts a task
     function acceptTask(
         bytes32 _userId,
         bytes32 _taskId
@@ -221,7 +242,9 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         //unless It's declare using storage keyword.
         User storage user = users[_userId];
         bytes32 currentTaskId;
-        //Reallocate all user available tasks.
+        // When a user accepts a task and since users are restricted to have 
+        // only one task accepted the rest of task asigned to the user are 
+        // reallocated
         for (uint i = 0; i < user.allocatedTasksLength; i++) {
             currentTaskId = user.allocatedTasks[i];
             if (currentTaskId != _taskId) {
@@ -231,6 +254,7 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         emit TaskAccepted(_userId, _taskId);
     }
 
+    // Function used when a user rejects a task
     function rejectTask(
         bytes32 _userId,
         bytes32 _taskId
@@ -243,6 +267,8 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         emit TaskRejected(_userId, _taskId);
     }
 
+    // Fucntion that implements the round-robin
+    // algorithm
     function reallocateTask(
         bytes32 _taskId
     )
@@ -255,26 +281,39 @@ contract RoundRobinApp is AragonApp, BaseTaskAllocation {
         uint newUserIndex = oldUserIndex.add(1);
         bool assigneeFounded = false;
         uint userCounter = 0;
-
+        
+        // Delete task from the previous "owner"
         deleteUserAllocatedTask(oldUserId, _taskId);
+        
+        // Iterate until find a user to whom assign the task or
+        // the array of users was totally traversed
         while (userCounter < userIndexLength && !assigneeFounded) {
+            // Check if index arrives to the end of the round
+            // then it should start over
             if (newUserIndex == userIndexLength) {
                 newUserIndex = 0;
             }
             bytes32 currUserId = userIndex[newUserIndex];
+            // Try to assigned that task to user (currUserId)
             assigneeFounded = addUserAllocatedTask(currUserId, _taskId);
+            // If assignation was successful emit event TaskAllocated
             if (assigneeFounded) {
                 emit TaskAllocated(userIndex[newUserIndex], _taskId, oldUserId);
             } else {
+                // If assignation did not work out increase counters to
+                // continue with the round robin
                 userCounter = userCounter.add(1);
                 newUserIndex = newUserIndex.add(1);
             }
         }
+        // Assign rejected status to the task if it couldn't be assigned to
+        // a user
         if (!assigneeFounded) {
             task.status = Status.Rejected;
         }
     }
 
+    // Function used to assign a task to a user
     function addUserAllocatedTask(
         bytes32 _userId,
         bytes32 _taskId
