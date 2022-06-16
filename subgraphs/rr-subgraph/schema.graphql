@@ -1,0 +1,39 @@
+type Config @entity {
+  id: ID!
+  maxAllocatedTasks: Int!
+  appAddress: Bytes!
+}
+
+type Task @entity {
+  id: ID!
+  endDate: BigInt!
+  status: TaskStatus!
+  statusInt: Int!
+  reallocationTime: BigInt!
+  assignee: User
+  rejecterUsers: [UserRejectedTask]! @derivedFrom(field: "task")
+  appAddress: Bytes!
+}
+
+type User @entity {
+  id: ID!
+  benefits: BigInt!
+  available: Boolean!
+  rejectedTasks: [UserRejectedTask]! @derivedFrom(field: "user")
+  appAddress: Bytes!
+}
+
+type UserRejectedTask @entity {
+  id: ID!
+  user: User!
+  task: Task!
+}
+
+enum TaskStatus {
+  NonExistent
+  Available
+  Assigned
+  Accepted
+  Rejected
+  Completed
+}
