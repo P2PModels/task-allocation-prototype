@@ -22,15 +22,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.4",
   namedAccounts: {
-    deployer: {
-        default: 0, // here this will by default take the first account as deployer
-        4: process.env.PUBLIC_KEY, // Rinkeby
-    },
+    amaraDeployer: {
+        default: 0,
+        4: process.env.AMARA_PUBLIC_KEY, // Rinkeby
+    }
   },
   networks: {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.PROJECT_ID}`,
-      accounts: [process.env.PRIVATE_KEY]
+      accounts: [process.env.AMARA_PRIVATE_KEY]
     }
   },
   paths: {
