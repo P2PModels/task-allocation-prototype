@@ -1,0 +1,422 @@
+{
+  "address": "0x9dedE0Fa91030E5C4DeC465fd540581144eEe1a2",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "apiUrl",
+          "type": "string"
+        }
+      ],
+      "name": "ApiUrlSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "userId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "taskId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskAccepted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "taskId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "taskId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "TaskDeleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "entity",
+          "type": "address"
+        }
+      ],
+      "name": "TasksRestart",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "userId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserDeleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "userId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "TIME_TO_ACCEPT_TASK",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_userId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_taskId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "acceptTask",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "apiUrl",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_taskId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "createTask",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_userId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "registerUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "restart",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_apiUrl",
+          "type": "string"
+        }
+      ],
+      "name": "setApiUrl",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x4d4964a6e30fe1835666610ef7d54cde03d84895ffc4ead2355f200dc92038b5",
+  "receipt": {
+    "to": null,
+    "from": "0x75567c2Cfbc85344b053BB97cA3e757A53331683",
+    "contractAddress": "0x9dedE0Fa91030E5C4DeC465fd540581144eEe1a2",
+    "transactionIndex": 13,
+    "gasUsed": "975516",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0xbf4f7c4b54e789787200a40605e63076c633839ead5be9373bf1526b7687c641",
+    "transactionHash": "0x4d4964a6e30fe1835666610ef7d54cde03d84895ffc4ead2355f200dc92038b5",
+    "logs": [],
+    "blockNumber": 10867813,
+    "cumulativeGasUsed": "1877807",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "solcInputHash": "00232639b1870a2f8d56428b9d51d924",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.4+commit.c7e474f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"string\",\"name\":\"apiUrl\",\"type\":\"string\"}],\"name\":\"ApiUrlSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"userId\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskId\",\"type\":\"bytes32\"}],\"name\":\"TaskAccepted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskId\",\"type\":\"bytes32\"}],\"name\":\"TaskCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"taskId\",\"type\":\"bytes32\"}],\"name\":\"TaskDeleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"entity\",\"type\":\"address\"}],\"name\":\"TasksRestart\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"userId\",\"type\":\"bytes32\"}],\"name\":\"UserDeleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"userId\",\"type\":\"bytes32\"}],\"name\":\"UserRegistered\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"TIME_TO_ACCEPT_TASK\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_userId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"_taskId\",\"type\":\"bytes32\"}],\"name\":\"acceptTask\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"apiUrl\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_taskId\",\"type\":\"bytes32\"}],\"name\":\"createTask\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_userId\",\"type\":\"bytes32\"}],\"name\":\"registerUser\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"restart\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_apiUrl\",\"type\":\"string\"}],\"name\":\"setApiUrl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"createTask(bytes32)\":{\"params\":{\"_taskId\":\"The task's id.\"}}},\"version\":1},\"userdoc\":{\"events\":{\"TaskCreated(bytes32)\":{\"notice\":\"Events\"},\"TasksRestart(address)\":{\"notice\":\"Events\"}},\"kind\":\"user\",\"methods\":{\"apiUrl()\":{\"notice\":\"State\"},\"createTask(bytes32)\":{\"notice\":\"Create a new task.\"},\"setApiUrl(string)\":{\"notice\":\"ACL\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/allocation-models/FCFSTAA.sol\":\"FCFSTAA\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.6.0) (utils/math/SafeMath.sol)\\n\\npragma solidity ^0.8.0;\\n\\n// CAUTION\\n// This version of SafeMath should only be used with Solidity 0.8 or later,\\n// because it relies on the compiler's built in overflow checks.\\n\\n/**\\n * @dev Wrappers over Solidity's arithmetic operations.\\n *\\n * NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler\\n * now has built in overflow checking.\\n */\\nlibrary SafeMath {\\n    /**\\n     * @dev Returns the addition of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            uint256 c = a + b;\\n            if (c < a) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b > a) return (false, 0);\\n            return (true, a - b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\\n            // benefit is lost if 'b' is also tested.\\n            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522\\n            if (a == 0) return (true, 0);\\n            uint256 c = a * b;\\n            if (c / a != b) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the division of two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a / b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a % b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the addition of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `+` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Addition cannot overflow.\\n     */\\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a + b;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting on\\n     * overflow (when the result is negative).\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a - b;\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `*` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Multiplication cannot overflow.\\n     */\\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a * b;\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * Counterpart to Solidity's `/` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a / b;\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting when dividing by zero.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a % b;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on\\n     * overflow (when the result is negative).\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {trySub}.\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b <= a, errorMessage);\\n            return a - b;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting with custom message on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * Counterpart to Solidity's `/` operator. Note: this function uses a\\n     * `revert` opcode (which leaves remaining gas untouched) while Solidity\\n     * uses an invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b > 0, errorMessage);\\n            return a / b;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting with custom message when dividing by zero.\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {tryMod}.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b > 0, errorMessage);\\n            return a % b;\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x0f633a0223d9a1dcccfcf38a64c9de0874dfcbfac0c6941ccf074d63a2ce0e1e\",\"license\":\"MIT\"},\"contracts/BaseTaskAllocation.sol\":{\"content\":\"pragma solidity ^0.8.4;\\n\\nabstract contract BaseTaskAllocation {\\n    /// Events\\n    event TasksRestart(address indexed entity);\\n    event ApiUrlSet(string apiUrl);\\n\\n    /// State\\n    string public apiUrl;\\n\\n    /// ACL\\n    // bytes32 constant public ALLOCATE_TASK_ROLE = keccak256(\\\"ALLOCATE_TASK_ROLE\\\");\\n    // bytes32 constant public GET_TASK_ROLE = keccak256(\\\"GET_TASK_ROLE\\\");\\n    // bytes32 constant public CREATE_TASK_ROLE = keccak256(\\\"CREATE_TASK_ROLE\\\");\\n    // bytes32 constant public CREATE_USER_ROLE = keccak256(\\\"CREATE_USER_ROLE\\\");\\n    // bytes32 constant public RESTART_APP_ROLE = keccak256(\\\"RESTART_APP_ROLE\\\");\\n\\n    function setApiUrl(string calldata _apiUrl) external {\\n        apiUrl = _apiUrl;\\n        emit ApiUrlSet(_apiUrl);\\n    }\\n\\n    function restart() virtual external {}\\n}\\n\",\"keccak256\":\"0xc7c99e3cfbf831bd8864e10ba0f4510c52675bff7809e6e5bb7249c6f6ee5ec0\"},\"contracts/allocation-models/FCFSTAA.sol\":{\"content\":\"pragma solidity ^0.8.4;\\n\\nimport \\\"@openzeppelin/contracts/utils/math/SafeMath.sol\\\";\\n\\nimport \\\"../BaseTaskAllocation.sol\\\";\\n\\n// Round Robin Task Allocation App\\ncontract FCFSTAA is BaseTaskAllocation {\\n\\n    using SafeMath for uint256;\\n\\n    /// Events\\n    event TaskCreated(bytes32 indexed taskId);\\n    event TaskDeleted(bytes32 indexed taskId);\\n    event TaskAccepted(bytes32 indexed userId, bytes32 indexed taskId);\\n    event UserRegistered(bytes32 indexed userId);\\n    event UserDeleted(bytes32 indexed userId);\\n\\n    /// Task statuses\\n    enum Status {\\n        NonExistent,\\n        Available,\\n        Accepted,\\n        Completed\\n    }\\n\\n    mapping(bytes32 => Task) tasks;\\n\\n    // List of task ids used for restarting purposes\\n    bytes32[] taskIds;\\n\\n    mapping(bytes32 => User) users;\\n\\n    //Need it to transvers users array more gracefuly. \\n    mapping(uint256 => bytes32) private userIndexToId;\\n    uint256 private numberOfUsers;\\n\\n    //To keep record of user's assignments and control that users can only \\n    // have 1 task accepted\\n    /*\\n     * Key: userId\\n     */\\n    mapping(bytes32 => bool) userTaskRegistry;\\n\\n    struct User {\\n        uint256 index;\\n        bool exists; // Check if the user exists in the mapping\\n    }\\n\\n    struct Task {\\n        uint256 userIndex;\\n        uint256 endDate; // When the task should be removed\\n        Status status; // Take one of the statuses value\\n    }\\n\\n    uint32 constant public TIME_TO_ACCEPT_TASK = 259200; // 3 days \\n\\n    ///Errors\\n    string private constant ERROR_USER_HAS_TASK = \\\"USER_HAS_TASK\\\";\\n    string private constant ERROR_USER_ALREADY_EXISTS = \\\"USER_ALREADY_EXISTS\\\";\\n    string private constant ERROR_USER_DONT_EXIST = \\\"USER_DONT_EXIST\\\";\\n    string private constant ERROR_TASK_EXISTS = \\\"TASK_EXISTS\\\";\\n    string private constant ERROR_TASK_DONT_EXIST = \\\"TASK_DONT_EXIST\\\";\\n    string private constant ERROR_TASK_ALLOCATION = \\\"TASK_ALLOCATION_FAIL\\\";\\n    string private constant ERROR_TASK_NOT_AVAILABLE = \\\"TASK_NOT_AVAILABLE\\\";\\n\\n    // Verification functions\\n    modifier userHasNoTask(bytes32 _userId) {\\n        require(!userTaskRegistry[_userId], ERROR_USER_HAS_TASK);\\n        _;\\n    }\\n    modifier userDontExist(bytes32 _userId) {\\n        require(!users[_userId].exists, ERROR_USER_ALREADY_EXISTS);\\n        _;\\n    }\\n    modifier userExists(bytes32 _userId) {\\n        require(users[_userId].exists, ERROR_USER_DONT_EXIST);\\n        _;\\n    }\\n    modifier taskDontExist(bytes32 _taskId) {\\n        require(tasks[_taskId].status == Status.NonExistent, ERROR_TASK_EXISTS);\\n        _;\\n    }\\n    modifier taskExists(bytes32 _taskId) {\\n        require(tasks[_taskId].status != Status.NonExistent, ERROR_TASK_DONT_EXIST);\\n        _;\\n    }\\n    modifier taskAvailable(bytes32 _taskId) {\\n        Task storage task = tasks[_taskId];\\n        require(task.status == Status.Available, ERROR_TASK_NOT_AVAILABLE);\\n        _;\\n    }\\n\\n    // Function used to register users\\n    function registerUser(bytes32 _userId)\\n    external\\n    userDontExist(_userId)\\n    {\\n        userIndexToId[numberOfUsers] = _userId;\\n        users[_userId].index = numberOfUsers;\\n        users[_userId].exists = true;\\n\\n        numberOfUsers = numberOfUsers.add(1);\\n\\n        emit UserRegistered(_userId);\\n    }\\n\\n    /**\\n     * @notice Create a new task.\\n     * @param _taskId The task's id.\\n     */\\n    function createTask(\\n        bytes32 _taskId\\n    )\\n    external\\n    taskDontExist(_taskId)\\n    {\\n        Task storage task = tasks[_taskId];\\n        task.userIndex = 0;\\n        task.endDate = block.timestamp.add(TIME_TO_ACCEPT_TASK);\\n        task.status = Status.Available;\\n\\n        taskIds.push(_taskId);\\n        emit TaskCreated(_taskId);\\n    }\\n\\n    // TODO \\n    // Fucntion that removes the task once the endDate time has expired\\n    // function removeTask(\\n    //     bytes32 _taskId\\n    // )\\n    // public\\n    // taskExists(_taskId)\\n    // {\\n        \\n    // }\\n\\n    // Function called when a user accepts a task\\n    function acceptTask(\\n        bytes32 _userId,\\n        bytes32 _taskId\\n    )\\n    external\\n    userExists(_userId)\\n    taskExists(_taskId)\\n    taskAvailable(_taskId)\\n    userHasNoTask(_userId)\\n    {\\n        userTaskRegistry[_userId] = true;\\n\\n        tasks[_taskId].status = Status.Accepted;\\n        tasks[_taskId].userIndex = users[_userId].index;\\n        \\n        emit TaskAccepted(_userId, _taskId);\\n    }\\n\\n\\n     // Function used to clean up the contract\\n    function restart() override external {\\n         // Remove tasks\\n        for (uint i = 0; i < taskIds.length; i++) {\\n            bytes32 tId = taskIds[i];\\n            Task storage task = tasks[tId];\\n\\n            // Set the status of the task to non-existent\\n            task.status = Status.NonExistent;\\n\\n            // Emit an event indicating that task has been deleted\\n            emit TaskDeleted(tId);\\n        }\\n\\n        // Remove users\\n        for (uint k = 0; k < numberOfUsers; k++) {\\n            bytes32 uId = userIndexToId[k];\\n            User storage user = users[uId];\\n            user.exists = false;\\n\\n            userTaskRegistry[uId] = false;\\n\\n            emit UserDeleted(uId);\\n        }\\n\\n        delete taskIds;\\n\\n        numberOfUsers = 0;\\n\\n        emit TasksRestart(msg.sender);\\n    }\\n\\n}\\n\",\"keccak256\":\"0x070a1880f2bec7fe0b775a391167247231696cb426077ba7c2107ce5bca4ca1a\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506110d5806100206000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c80634988a5691161005b5780634988a569146100c65780638367e120146100e2578063b293e81c14610100578063e8c75a301461011c5761007d565b806303f33ef2146100825780631ef3755d146100a05780632dc03259146100aa575b600080fd5b61008a610138565b6040516100979190610eab565b60405180910390f35b6100a861013f565b005b6100c460048036038101906100bf9190610d46565b610368565b005b6100e060048036038101906100db9190610d6f565b6104b9565b005b6100ea610910565b6040516100f79190610e89565b60405180910390f35b61011a60048036038101906101159190610d46565b61099e565b005b61013660048036038101906101319190610dab565b610ba1565b005b6203f48081565b60005b6002805490508110156102445760006002828154811061018b577f4e487b7100000000000000000000000000000000000000000000000000000000600052603260045260246000fd5b90600052602060002001549050600060016000838152602001908152602001600020905060008160020160006101000a81548160ff021916908360038111156101fd577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b0217905550817fa96209878fc4722b56527db6cf4b72ad6bfddb3ad9968f7de1125d02acc9aa1060405160405180910390a25050808061023c90610fd0565b915050610142565b5060005b60055481101561030c57600060046000838152602001908152602001600020549050600060036000838152602001908152602001600020905060008160010160006101000a81548160ff02191690831515021790555060006006600084815260200190815260200160002060006101000a81548160ff021916908315150217905550817fc26eb30613e535870aeacfc24e58a8fb60e992f0d8bfe04ec9c98db26b53c5e560405160405180910390a25050808061030490610fd0565b915050610248565b506002600061031b9190610c06565b60006005819055503373ffffffffffffffffffffffffffffffffffffffff167f27563bd9f3c446b90907219bff4dda76f7ca7ede071560f5856f9848e04048b160405160405180910390a2565b806003600082815260200190815260200160002060010160009054906101000a900460ff16156040518060400160405280601381526020017f555345525f414c52454144595f4558495354530000000000000000000000000081525090610405576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103fc9190610e89565b60405180910390fd5b508160046000600554815260200190815260200160002081905550600554600360008481526020019081526020016000206000018190555060016003600084815260200190815260200160002060010160006101000a81548160ff0219169083151502179055506104826001600554610bf090919063ffffffff16565b600581905550817f78997021e09413de1e36500ed07f9f6c73541162817fc3ea6a115e5e3d3affb960405160405180910390a25050565b816003600082815260200190815260200160002060010160009054906101000a900460ff166040518060400160405280600f81526020017f555345525f444f4e545f4558495354000000000000000000000000000000000081525090610555576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161054c9190610e89565b60405180910390fd5b508160006003811115610591577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b6001600083815260200190815260200160002060020160009054906101000a900460ff1660038111156105ed577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b14156040518060400160405280600f81526020017f5441534b5f444f4e545f4558495354000000000000000000000000000000000081525090610666576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161065d9190610e89565b60405180910390fd5b50826000600160008381526020019081526020016000209050600160038111156106b9577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b8160020160009054906101000a900460ff166003811115610703577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b146040518060400160405280601281526020017f5441534b5f4e4f545f415641494c41424c4500000000000000000000000000008152509061077b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016107729190610e89565b60405180910390fd5b50856006600082815260200190815260200160002060009054906101000a900460ff16156040518060400160405280600d81526020017f555345525f4841535f5441534b0000000000000000000000000000000000000081525090610816576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161080d9190610e89565b60405180910390fd5b5060016006600089815260200190815260200160002060006101000a81548160ff02191690831515021790555060026001600088815260200190815260200160002060020160006101000a81548160ff021916908360038111156108a3577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b02179055506003600088815260200190815260200160002060000154600160008881526020019081526020016000206000018190555085877f79abe3f1773abfb5f6cb7b5538ca39f03dcbb7ee4b9a991d76885cf70bd469fb60405160405180910390a350505050505050565b6000805461091d90610f9e565b80601f016020809104026020016040519081016040528092919081815260200182805461094990610f9e565b80156109965780601f1061096b57610100808354040283529160200191610996565b820191906000526020600020905b81548152906001019060200180831161097957829003601f168201915b505050505081565b80600060038111156109d9577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b6001600083815260200190815260200160002060020160009054906101000a900460ff166003811115610a35577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b146040518060400160405280600b81526020017f5441534b5f45584953545300000000000000000000000000000000000000000081525090610aad576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610aa49190610e89565b60405180910390fd5b50600060016000848152602001908152602001600020905060008160000181905550610aeb6203f48063ffffffff1642610bf090919063ffffffff16565b816001018190555060018160020160006101000a81548160ff02191690836003811115610b41577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b02179055506002839080600181540180825580915050600190039060005260206000200160009091909190915055827f1e28175955a872c8252a6e5cf36ac6b318d074eb78b49731e5cb9ddc2d870b6360405160405180910390a2505050565b818160009190610bb2929190610c27565b507fd72e0c57dfc415d699dbb367f561821dd76f681a6d3916009299d4e89b5f3bcf8282604051610be4929190610e65565b60405180910390a15050565b60008183610bfe9190610ee2565b905092915050565b5080546000825590600052602060002090810190610c249190610cad565b50565b828054610c3390610f9e565b90600052602060002090601f016020900481019282610c555760008555610c9c565b82601f10610c6e57803560ff1916838001178555610c9c565b82800160010185558215610c9c579182015b82811115610c9b578235825591602001919060010190610c80565b5b509050610ca99190610cca565b5090565b5b80821115610cc6576000816000905550600101610cae565b5090565b5b80821115610ce3576000816000905550600101610ccb565b5090565b600081359050610cf681611088565b92915050565b60008083601f840112610d0e57600080fd5b8235905067ffffffffffffffff811115610d2757600080fd5b602083019150836001820283011115610d3f57600080fd5b9250929050565b600060208284031215610d5857600080fd5b6000610d6684828501610ce7565b91505092915050565b60008060408385031215610d8257600080fd5b6000610d9085828601610ce7565b9250506020610da185828601610ce7565b9150509250929050565b60008060208385031215610dbe57600080fd5b600083013567ffffffffffffffff811115610dd857600080fd5b610de485828601610cfc565b92509250509250929050565b6000610dfc8385610ed1565b9350610e09838584610f5c565b610e1283611077565b840190509392505050565b6000610e2882610ec6565b610e328185610ed1565b9350610e42818560208601610f6b565b610e4b81611077565b840191505092915050565b610e5f81610f4c565b82525050565b60006020820190508181036000830152610e80818486610df0565b90509392505050565b60006020820190508181036000830152610ea38184610e1d565b905092915050565b6000602082019050610ec06000830184610e56565b92915050565b600081519050919050565b600082825260208201905092915050565b6000610eed82610f42565b9150610ef883610f42565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610f2d57610f2c611019565b5b828201905092915050565b6000819050919050565b6000819050919050565b600063ffffffff82169050919050565b82818337600083830152505050565b60005b83811015610f89578082015181840152602081019050610f6e565b83811115610f98576000848401525b50505050565b60006002820490506001821680610fb657607f821691505b60208210811415610fca57610fc9611048565b5b50919050565b6000610fdb82610f42565b91507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82141561100e5761100d611019565b5b600182019050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b6000601f19601f8301169050919050565b61109181610f38565b811461109c57600080fd5b5056fea2646970667358221220d1e578d0b3bb1de86ce72bd33969e7595a97d141fb27a3b11582a1fe7e67f26b64736f6c63430008040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061007d5760003560e01c80634988a5691161005b5780634988a569146100c65780638367e120146100e2578063b293e81c14610100578063e8c75a301461011c5761007d565b806303f33ef2146100825780631ef3755d146100a05780632dc03259146100aa575b600080fd5b61008a610138565b6040516100979190610eab565b60405180910390f35b6100a861013f565b005b6100c460048036038101906100bf9190610d46565b610368565b005b6100e060048036038101906100db9190610d6f565b6104b9565b005b6100ea610910565b6040516100f79190610e89565b60405180910390f35b61011a60048036038101906101159190610d46565b61099e565b005b61013660048036038101906101319190610dab565b610ba1565b005b6203f48081565b60005b6002805490508110156102445760006002828154811061018b577f4e487b7100000000000000000000000000000000000000000000000000000000600052603260045260246000fd5b90600052602060002001549050600060016000838152602001908152602001600020905060008160020160006101000a81548160ff021916908360038111156101fd577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b0217905550817fa96209878fc4722b56527db6cf4b72ad6bfddb3ad9968f7de1125d02acc9aa1060405160405180910390a25050808061023c90610fd0565b915050610142565b5060005b60055481101561030c57600060046000838152602001908152602001600020549050600060036000838152602001908152602001600020905060008160010160006101000a81548160ff02191690831515021790555060006006600084815260200190815260200160002060006101000a81548160ff021916908315150217905550817fc26eb30613e535870aeacfc24e58a8fb60e992f0d8bfe04ec9c98db26b53c5e560405160405180910390a25050808061030490610fd0565b915050610248565b506002600061031b9190610c06565b60006005819055503373ffffffffffffffffffffffffffffffffffffffff167f27563bd9f3c446b90907219bff4dda76f7ca7ede071560f5856f9848e04048b160405160405180910390a2565b806003600082815260200190815260200160002060010160009054906101000a900460ff16156040518060400160405280601381526020017f555345525f414c52454144595f4558495354530000000000000000000000000081525090610405576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103fc9190610e89565b60405180910390fd5b508160046000600554815260200190815260200160002081905550600554600360008481526020019081526020016000206000018190555060016003600084815260200190815260200160002060010160006101000a81548160ff0219169083151502179055506104826001600554610bf090919063ffffffff16565b600581905550817f78997021e09413de1e36500ed07f9f6c73541162817fc3ea6a115e5e3d3affb960405160405180910390a25050565b816003600082815260200190815260200160002060010160009054906101000a900460ff166040518060400160405280600f81526020017f555345525f444f4e545f4558495354000000000000000000000000000000000081525090610555576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161054c9190610e89565b60405180910390fd5b508160006003811115610591577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b6001600083815260200190815260200160002060020160009054906101000a900460ff1660038111156105ed577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b14156040518060400160405280600f81526020017f5441534b5f444f4e545f4558495354000000000000000000000000000000000081525090610666576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161065d9190610e89565b60405180910390fd5b50826000600160008381526020019081526020016000209050600160038111156106b9577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b8160020160009054906101000a900460ff166003811115610703577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b146040518060400160405280601281526020017f5441534b5f4e4f545f415641494c41424c4500000000000000000000000000008152509061077b576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016107729190610e89565b60405180910390fd5b50856006600082815260200190815260200160002060009054906101000a900460ff16156040518060400160405280600d81526020017f555345525f4841535f5441534b0000000000000000000000000000000000000081525090610816576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161080d9190610e89565b60405180910390fd5b5060016006600089815260200190815260200160002060006101000a81548160ff02191690831515021790555060026001600088815260200190815260200160002060020160006101000a81548160ff021916908360038111156108a3577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b02179055506003600088815260200190815260200160002060000154600160008881526020019081526020016000206000018190555085877f79abe3f1773abfb5f6cb7b5538ca39f03dcbb7ee4b9a991d76885cf70bd469fb60405160405180910390a350505050505050565b6000805461091d90610f9e565b80601f016020809104026020016040519081016040528092919081815260200182805461094990610f9e565b80156109965780601f1061096b57610100808354040283529160200191610996565b820191906000526020600020905b81548152906001019060200180831161097957829003601f168201915b505050505081565b80600060038111156109d9577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b6001600083815260200190815260200160002060020160009054906101000a900460ff166003811115610a35577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b146040518060400160405280600b81526020017f5441534b5f45584953545300000000000000000000000000000000000000000081525090610aad576040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610aa49190610e89565b60405180910390fd5b50600060016000848152602001908152602001600020905060008160000181905550610aeb6203f48063ffffffff1642610bf090919063ffffffff16565b816001018190555060018160020160006101000a81548160ff02191690836003811115610b41577f4e487b7100000000000000000000000000000000000000000000000000000000600052602160045260246000fd5b02179055506002839080600181540180825580915050600190039060005260206000200160009091909190915055827f1e28175955a872c8252a6e5cf36ac6b318d074eb78b49731e5cb9ddc2d870b6360405160405180910390a2505050565b818160009190610bb2929190610c27565b507fd72e0c57dfc415d699dbb367f561821dd76f681a6d3916009299d4e89b5f3bcf8282604051610be4929190610e65565b60405180910390a15050565b60008183610bfe9190610ee2565b905092915050565b5080546000825590600052602060002090810190610c249190610cad565b50565b828054610c3390610f9e565b90600052602060002090601f016020900481019282610c555760008555610c9c565b82601f10610c6e57803560ff1916838001178555610c9c565b82800160010185558215610c9c579182015b82811115610c9b578235825591602001919060010190610c80565b5b509050610ca99190610cca565b5090565b5b80821115610cc6576000816000905550600101610cae565b5090565b5b80821115610ce3576000816000905550600101610ccb565b5090565b600081359050610cf681611088565b92915050565b60008083601f840112610d0e57600080fd5b8235905067ffffffffffffffff811115610d2757600080fd5b602083019150836001820283011115610d3f57600080fd5b9250929050565b600060208284031215610d5857600080fd5b6000610d6684828501610ce7565b91505092915050565b60008060408385031215610d8257600080fd5b6000610d9085828601610ce7565b9250506020610da185828601610ce7565b9150509250929050565b60008060208385031215610dbe57600080fd5b600083013567ffffffffffffffff811115610dd857600080fd5b610de485828601610cfc565b92509250509250929050565b6000610dfc8385610ed1565b9350610e09838584610f5c565b610e1283611077565b840190509392505050565b6000610e2882610ec6565b610e328185610ed1565b9350610e42818560208601610f6b565b610e4b81611077565b840191505092915050565b610e5f81610f4c565b82525050565b60006020820190508181036000830152610e80818486610df0565b90509392505050565b60006020820190508181036000830152610ea38184610e1d565b905092915050565b6000602082019050610ec06000830184610e56565b92915050565b600081519050919050565b600082825260208201905092915050565b6000610eed82610f42565b9150610ef883610f42565b9250827fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff03821115610f2d57610f2c611019565b5b828201905092915050565b6000819050919050565b6000819050919050565b600063ffffffff82169050919050565b82818337600083830152505050565b60005b83811015610f89578082015181840152602081019050610f6e565b83811115610f98576000848401525b50505050565b60006002820490506001821680610fb657607f821691505b60208210811415610fca57610fc9611048565b5b50919050565b6000610fdb82610f42565b91507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82141561100e5761100d611019565b5b600182019050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b7f4e487b7100000000000000000000000000000000000000000000000000000000600052602260045260246000fd5b6000601f19601f8301169050919050565b61109181610f38565b811461109c57600080fd5b5056fea2646970667358221220d1e578d0b3bb1de86ce72bd33969e7595a97d141fb27a3b11582a1fe7e67f26b64736f6c63430008040033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "createTask(bytes32)": {
+        "params": {
+          "_taskId": "The task's id."
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "events": {
+      "TaskCreated(bytes32)": {
+        "notice": "Events"
+      },
+      "TasksRestart(address)": {
+        "notice": "Events"
+      }
+    },
+    "kind": "user",
+    "methods": {
+      "apiUrl()": {
+        "notice": "State"
+      },
+      "createTask(bytes32)": {
+        "notice": "Create a new task."
+      },
+      "setApiUrl(string)": {
+        "notice": "ACL"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 325,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "apiUrl",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_string_storage"
+      },
+      {
+        "astId": 387,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "tasks",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_struct(Task)418_storage)"
+      },
+      {
+        "astId": 390,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "taskIds",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_array(t_bytes32)dyn_storage"
+      },
+      {
+        "astId": 395,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "users",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_struct(User)410_storage)"
+      },
+      {
+        "astId": 399,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "userIndexToId",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_bytes32)"
+      },
+      {
+        "astId": 401,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "numberOfUsers",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 405,
+        "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+        "label": "userTaskRegistry",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      }
+    ],
+    "types": {
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(Status)382": {
+        "encoding": "inplace",
+        "label": "enum FCFSTAA.Status",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_struct(Task)418_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct FCFSTAA.Task)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Task)418_storage"
+      },
+      "t_mapping(t_bytes32,t_struct(User)410_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct FCFSTAA.User)",
+        "numberOfBytes": "32",
+        "value": "t_struct(User)410_storage"
+      },
+      "t_mapping(t_uint256,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Task)418_storage": {
+        "encoding": "inplace",
+        "label": "struct FCFSTAA.Task",
+        "members": [
+          {
+            "astId": 412,
+            "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+            "label": "userIndex",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 414,
+            "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+            "label": "endDate",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 417,
+            "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+            "label": "status",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_enum(Status)382"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(User)410_storage": {
+        "encoding": "inplace",
+        "label": "struct FCFSTAA.User",
+        "members": [
+          {
+            "astId": 407,
+            "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+            "label": "index",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 409,
+            "contract": "contracts/allocation-models/FCFSTAA.sol:FCFSTAA",
+            "label": "exists",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bool"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
