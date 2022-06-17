@@ -25,13 +25,7 @@ describe("RoundRobinTAA contract", function () {
     // Conect to an account
     roundRobinTAAInstance = await roundRobinTAADeploy.connect(owner);
   });
-
-  // describe("Deployment", function () {
-  //   it("Should set the right owner", async function () {
-  //     expect(await roundRobinTAAInstance.owner()).to.equal(owner.address);
-  //   });
-  // });
-
+  
   describe("Register users", function () {
 
     it(`Should emit a user registered event for user ${users[0]}`, async function () {
@@ -64,33 +58,6 @@ describe("RoundRobinTAA contract", function () {
     //       .withArgs(formatBytes32String(user));
     //   });
     // });
-    
-
-    // it("Should return the reported case", async function () {
-    //   await caseRegistryInstance.report(
-    //     caseToReport.companyName,
-    //     caseToReport.caseType,
-    //     caseToReport.description,
-    //     caseToReport.region,
-    //     caseToReport.profession,
-    //     caseToReport.gender,
-    //     caseToReport.ageRange,
-    //     caseToReport.experience
-    //   );
-
-    //   const reportedCase = await caseRegistryInstance.casesById(
-    //     caseToReport.id
-    //   );
-
-    //   expect(reportedCase["id"]).to.equal(caseToReport.id);
-    //   expect(reportedCase["companyName"]).to.equal(caseToReport.companyName);
-    //   expect(reportedCase["caseType"]).to.equal(caseToReport.caseType);
-    //   expect(reportedCase["description"]).to.equal(caseToReport.description);
-    //   expect(reportedCase["region"]).to.equal(caseToReport.region);
-    //   expect(reportedCase["profession"]).to.equal(caseToReport.profession);
-    //   expect(reportedCase["gender"]).to.equal(caseToReport.gender);
-    //   expect(reportedCase["ageRange"]).to.equal(caseToReport.ageRange);
-    //   expect(reportedCase["experience"]).to.equal(caseToReport.experience);
-    // });
+  
   });
 });

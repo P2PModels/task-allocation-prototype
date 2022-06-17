@@ -59,7 +59,7 @@ contract RoundRobinTAA is BaseTaskAllocation {
 
     struct Task {
         uint256 userIndex;
-        // Need this to remove task when being reallocated
+        // Need this to remove task when being reallocated  
         uint256 allocationIndex;
         // Indicate when the task should be reasigned
         uint256 endDate;
