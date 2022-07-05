@@ -1,0 +1,17 @@
+enum TaskStatus {
+  NonExistent
+  Available
+  Accepted
+  Completed
+}
+
+type Task @entity {
+  id: ID!
+  userId: String!
+  status: TaskStatus!
+}
+
+type User @entity {
+  id: ID!
+  hasTask: Boolean!
+}

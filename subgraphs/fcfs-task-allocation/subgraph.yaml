@@ -1,0 +1,42 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: FCFSTAA
+    network: rinkeby
+    source:
+      address: "0x9dedE0Fa91030E5C4DeC465fd540581144eEe1a2"
+      abi: FCFSTAA
+      startBlock: 10971992
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ApiUrlSet
+        - TaskAccepted
+        - TaskCreated
+        - TaskDeleted
+        - TasksRestart
+        - UserDeleted
+        - UserRegistered
+      abis:
+        - name: FCFSTAA
+          file: ./abis/FCFSTAA.json
+      eventHandlers:
+        - event: ApiUrlSet(string)
+          handler: handleApiUrlSet
+        - event: TaskAccepted(indexed bytes32,indexed bytes32)
+          handler: handleTaskAccepted
+        - event: TaskCreated(indexed bytes32)
+          handler: handleTaskCreated
+        - event: TaskDeleted(indexed bytes32)
+          handler: handleTaskDeleted
+        - event: TasksRestart(indexed address)
+          handler: handleTasksRestart
+        - event: UserDeleted(indexed bytes32)
+          handler: handleUserDeleted
+        - event: UserRegistered(indexed bytes32)
+          handler: handleUserRegistered
+      file: ./src/mapping.ts
