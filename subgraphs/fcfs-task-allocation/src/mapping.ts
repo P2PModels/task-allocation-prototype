@@ -45,12 +45,14 @@ export function handleTaskAccepted(event: TaskAccepted): void {
   if(taskEntity){
     taskEntity.userId = event.params.userId.toString()
     taskEntity.status = STATUS_ACCEPTED
+    taskEntity.save()
   }
 
   let userEntity = User.load(event.params.userId.toString())
 
   if(userEntity){
     userEntity.hasTask = true
+    userEntity.save()
   }
 
 }
