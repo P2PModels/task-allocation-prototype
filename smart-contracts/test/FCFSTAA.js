@@ -72,7 +72,7 @@ describe("FCFSTAA contract", function () {
 
   });
 
-  describe("Assign task to user", function() {
+  describe("Accept task by user", function() {
 
     it(`Should assign task ${tasks[0].job_id} to user ${users[0]} and emit a task accepted event`, async function () {
       
