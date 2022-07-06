@@ -1,0 +1,24 @@
+type Task @entity {
+  id: ID!
+  endDate: BigInt!
+  status: TaskStatus!
+  reallocationTime: BigInt!
+  assignee: User
+  rejecterUsers: [User]!
+}
+
+type User @entity {
+  id: ID!
+  benefits: BigInt!
+  available: Boolean!
+  rejectedTasks: [Task]!
+}
+
+enum TaskStatus {
+  NonExistent
+  Available
+  Assigned
+  Accepted
+  Rejected
+  Completed
+}
