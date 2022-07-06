@@ -1,0 +1,51 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RoundRobinTAA
+    network: rinkeby
+    source:
+      address: "0x48d0c77Cb15Bb7d6c432908F986b74820dE1ee9D"
+      abi: RoundRobinTAA
+      startBlock: 10400000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ApiUrlSet
+        - RejecterDeleted
+        - TaskAccepted
+        - TaskAllocated
+        - TaskCreated
+        - TaskDeleted
+        - TaskRejected
+        - TasksRestart
+        - UserDeleted
+        - UserRegistered
+      abis:
+        - name: RoundRobinTAA
+          file: RoundRobinTAA/abis/RoundRobinTAA.json
+      eventHandlers:
+        - event: ApiUrlSet(string)
+          handler: handleApiUrlSet
+        - event: RejecterDeleted(indexed bytes32,indexed bytes32)
+          handler: handleRejecterDeleted
+        - event: TaskAccepted(indexed bytes32,indexed bytes32)
+          handler: handleTaskAccepted
+        - event: TaskAllocated(indexed bytes32,indexed bytes32,bytes32)
+          handler: handleTaskAllocated
+        - event: TaskCreated(indexed bytes32)
+          handler: handleTaskCreated
+        - event: TaskDeleted(indexed bytes32)
+          handler: handleTaskDeleted
+        - event: TaskRejected(indexed bytes32,indexed bytes32)
+          handler: handleTaskRejected
+        - event: TasksRestart(indexed address)
+          handler: handleTasksRestart
+        - event: UserDeleted(indexed bytes32)
+          handler: handleUserDeleted
+        - event: UserRegistered(indexed bytes32)
+          handler: handleUserRegistered
+      file: RoundRobinTAA/RoundRobinTAA.wasm
