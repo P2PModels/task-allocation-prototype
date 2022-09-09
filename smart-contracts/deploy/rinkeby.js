@@ -1,18 +1,19 @@
-module.exports = async ({ getNamedAccounts, deployments }) => {
-  const { deploy } = deployments;
-  const { amaraDeployer } = await getNamedAccounts();
+async function main() {
+  const [deployer] = await ethers.getSigners();
 
-  console.log("Deploying FCFSTAA.sol smart contract")
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  // Deploy FCFSTAA.sol from fcfsDeployer in Rinkeby, saved to deployments->rinkeby
-  await deploy("FCFSTAA", {
-    from: amaraDeployer,
-    gasLimit: 4000000,
-    // High gas price to avoid failling txs
-    // gasPrice: 2000000000,
-    args: [],
+  console.log("Account balance:", (await deployer.getBalance()).toString());
+
+  const RoundRobinCalTAA = await ethers.getContractFactory("RoundRobinCalTAA");
+  const RoundRobinCalTAAInstance = await RoundRobinCalTAA.deploy();
+
+  console.log("Contract address:", RoundRobinCalTAAInstance.address);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
   });
-
-  const {  } = await getNamedAccounts();
-
-};

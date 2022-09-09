@@ -154,6 +154,33 @@ describe("RoundRobinCalTAA contract", function () {
         );
       }
     });
+
+    it(`Should get user ${users[0]}, including calendar time ranges`, async function () {
+      // Mock availability calendar, smart contract stores timestamo in s
+      let calendar = [];
+      let nowInS = +(Date.now() / 1000).toFixed(0);
+      calendar.push([nowInS, nowInS + 3600]);
+      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
+      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[0])
+      );
+
+      await roundRobinCalTAAInstance.setUserCalendarRanges(
+        formatBytes32String(users[0]),
+        calendar
+      );
+
+      let userArray = await roundRobinCalTAAInstance.getUser(
+        formatBytes32String(users[0])
+      );
+
+      // Only checking first value of calendar, all object could be logged
+      await expect(userArray["calendarRanges"][0][0].toNumber()).to.equal(
+        calendar[0][0]
+      );
+    });
   });
 
   describe("Register task", function () {

@@ -401,7 +401,8 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
             uint256 benefits,
             bool available,
             bool exists,
-            uint256 allocatedTasksLength
+            uint256 allocatedTasksLength,
+            uint256[2][] memory calendarRanges
         )
     {
         User storage user = users[_userId];
@@ -410,6 +411,7 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
         available = user.available;
         exists = user.exists;
         allocatedTasksLength = user.allocatedTasksLength;
+        calendarRanges = user.calendarRanges;
     }
 
     function getAllocatedTask(bytes32 _userId, uint256 _taskIndex)
