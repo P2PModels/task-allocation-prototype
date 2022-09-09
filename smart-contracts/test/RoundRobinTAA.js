@@ -167,6 +167,37 @@ describe("RoundRobinTAA contract", function () {
         );
       }
     });
+    it(`Should reject allocating another task to user ${users[0]} which already have max number of task asigned`, async function () {
+      let maxNumOfTasks = 3;
+      await roundRobinTAAInstance.registerUser(formatBytes32String(users[0]));
+
+      for (let i = 0; i < maxNumOfTasks; i++) {
+        await roundRobinTAAInstance.createTask(
+          formatBytes32String(tasks[i].job_id),
+          REALLOCATION_TIME
+        );
+        await roundRobinTAAInstance.allocateTask(
+          formatBytes32String(tasks[i].job_id),
+          formatBytes32String(users[0])
+        );
+      }
+
+      await roundRobinTAAInstance.createTask(
+        formatBytes32String(tasks[maxNumOfTasks].job_id),
+        REALLOCATION_TIME
+      );
+
+      try {
+        await roundRobinTAAInstance.allocateTask(
+          formatBytes32String(tasks[maxNumOfTasks].job_id),
+          formatBytes32String(users[0])
+        );
+      } catch (e) {
+        expect(e.message).to.equal(
+          "VM Exception while processing transaction: reverted with reason string 'USER_HAS_TOO_MANY_TASKS'"
+        );
+      }
+    });
   });
 
   describe("Accept task", function () {
