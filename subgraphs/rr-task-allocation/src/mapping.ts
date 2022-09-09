@@ -41,7 +41,6 @@ export function handleTaskCreated(event: TaskCreatedEvent): void {
   taskEntity.endDate = task.value2
   taskEntity.reallocationTime = task.value4
   taskEntity.status = STATUS_AVAILABLE
-  taskEntity.rejecterUsers = []
 
   log.debug('Created task: id {}  endDate {} reallocationTime {} status {}', [
     taskEntity.id,
@@ -79,7 +78,7 @@ export function handleTaskAllocated(event: TaskAllocatedEvent): void {
     taskEntity.status = STATUS_ASSIGNED,
     taskEntity.reallocationTime = task.value4
 
-    let userEntity = Task.load(event.params.taskId.toString())
+    let userEntity = User.load(event.params.userId.toString())
     if (userEntity) {
       taskEntity.assignee = userEntity.id
     }
@@ -105,10 +104,16 @@ export function handleTaskAccepted(event: TaskAcceptedEvent): void {
   
     taskEntity.save()
   }
+
+  let userEntity = User.load(event.params.userId.toString())
+  if (userEntity) {
+    userEntity.available = false
+    userEntity.save()
+  }
 }
 
 export function handleTaskRejected(event: TaskRejectedEvent): void {
-  log.debug('TaskAllocated event received. userId: {} taskId: {}', [
+  log.debug('TaskRejected event received. userId: {} taskId: {}', [
     event.params.userId.toString(),
     event.params.taskId.toString(),
   ])
@@ -117,13 +122,14 @@ export function handleTaskRejected(event: TaskRejectedEvent): void {
   if (taskEntity) {
     taskEntity.assignee = null
     taskEntity.status = STATUS_REJECTED
-    taskEntity.rejecterUsers.push(event.params.userId.toString())
     taskEntity.save()  
   }
 
   let userEntity = User.load(event.params.userId.toString())
   if (userEntity) {
-    userEntity.rejectedTasks.push(event.params.taskId.toString())
+    let rejectedTask = userEntity.rejectedTasks
+    rejectedTask.push(event.params.taskId.toString())
+    userEntity.rejectedTasks = rejectedTask
     userEntity.save()
   }
 }
@@ -137,7 +143,7 @@ export function handleUserRegistered(event: UserRegisteredEvent): void {
 
   useEntity.benefits = BigInt.fromI32(0)
   useEntity.available = true
-  useEntity.rejectedTasks = []
+  useEntity.rejectedTasks = new Array<string> (0)
 
   useEntity.save()
 
