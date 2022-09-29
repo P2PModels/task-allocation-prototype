@@ -55,7 +55,8 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
         uint256 index;
         uint256 benefits; // <-- to be used in the future to award users for tasks completed
         bool available;
-        uint256[2][] calendarRanges; // Always ordered in increasing time for performance. Determines wheter the user is working or not
+        uint256[] calendarRangesStart; // Always ordered in increasing time for performance. Determines wheter the user is working or not
+        uint256[] calendarRangesEnd; // Always ordered in increasing time for performance. Determines wheter the user is working or not
         // Check if the user exists in the mapping
         bool exists;
         // List of tasks assigned to the userof array
@@ -91,10 +92,8 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
     string private constant ERROR_TASK_ALLOCATION = "TASK_ALLOCATION_FAIL";
     string private constant ERROR_TASK_NOT_ASSIGNED_TO_USER =
         "TASK_NOT_ASSIGNED_TO_USER";
-    string private constant ERROR_USER_HAS_TOO_MANY_TASKS =
-        "USER_HAS_TOO_MANY_TASKS";
     string private constant ERROR_PAST_TIME_RANGE = "PAST_TIME_RANGE";
-
+    string private constant ERROR_INVALID_TIME_RANGES = "INVALID_TIME_RANGES";
     string private constant ERROR_INVALID_TIME_RANGE = "INVALID_TIME_RANGE";
     string private constant ERROR_TIME_RANGES_NOT_ORDERED =
         "TIME_RANGES_NOT_INCREASINGLY_ORDERED";
@@ -139,14 +138,6 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
         _;
     }
 
-    modifier tooManyTasks(bytes32 _userId) {
-        require(
-            users[_userId].allocatedTasksLength <= MAX_ALLOCATED_TASKS,
-            ERROR_USER_HAS_TOO_MANY_TASKS
-        );
-        _;
-    }
-
     // Contract "constructor"
     // function initialize() public onlyInit {
     //     initialized();
@@ -180,7 +171,8 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
             user.exists = false;
             // Need to empty mapping manually.
             user.allocatedTasksLength = 0;
-            delete user.calendarRanges; // Empty availability
+            delete user.calendarRangesStart; // Empty availability
+            delete user.calendarRangesEnd; // Empty availability
             userTaskRegistry[uId] = false;
 
             emit UserDeleted(uId);
@@ -210,32 +202,68 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
     /**
      * @notice Updates users calendar.
      * @param _userId The user's id.
-     * @param ranges The time ranges in wich the user is working .
+     * @param rangesStart The time ranges start in wich the user is working.
+     * @param rangesEnd The time ranges end in wich the user is working.
      */
-    function setUserCalendarRanges(bytes32 _userId, uint256[2][] memory ranges)
-        external
-        userExists(_userId)
-    {
-        uint256 i = 0;
-        for (i = 0; i < ranges.length; i++) {
+    function setUserCalendarRanges(
+        bytes32 _userId,
+        uint256[] memory rangesStart,
+        uint256[] memory rangesEnd
+    ) external userExists(_userId) {
+        require(
+            rangesStart.length == rangesEnd.length,
+            ERROR_INVALID_TIME_RANGES
+        );
+
+        for (uint256 i = 0; i < rangesStart.length; i++) {
             // Check that the array is ordered and with valid values
             require(
-                ranges[i][0] > (block.timestamp - 3600 * 24),
+                rangesStart[i] > (block.timestamp - 3600 * 24),
                 ERROR_PAST_TIME_RANGE
             ); // Allow ranges starting the day before
-            require(ranges[i][0] < ranges[i][1], ERROR_INVALID_TIME_RANGE);
-            if (i + 1 < ranges.length) {
+            require(rangesStart[i] < rangesEnd[i], ERROR_INVALID_TIME_RANGE);
+            if (i + 1 < rangesStart.length) {
                 require(
-                    ranges[i][0] < ranges[i + 1][0],
+                    rangesStart[i] < rangesStart[i + 1],
                     ERROR_TIME_RANGES_NOT_ORDERED
                 );
             }
+        }
 
+        delete users[_userId].calendarRangesStart;
+        delete users[_userId].calendarRangesEnd;
+
+        for (uint256 i = 0; i < rangesStart.length; i++) {
             //Assign
-            users[_userId].calendarRanges.push([ranges[i][0], ranges[i][1]]);
+            users[_userId].calendarRangesStart.push(rangesStart[i]);
+            users[_userId].calendarRangesEnd.push(rangesEnd[i]);
         }
 
         emit UserCalendarUpdated(_userId);
+    }
+
+    /**
+     * @notice Check if user is in working hours.
+     * @param _userId The user's id.
+     */
+    function isWorking(bytes32 _userId) private view returns (bool) {
+        if (users[_userId].calendarRangesStart.length == 0) {
+            return false;
+        }
+
+        for (
+            uint256 i = 0;
+            i < users[_userId].calendarRangesStart.length;
+            i++
+        ) {
+            if (
+                block.timestamp > users[_userId].calendarRangesStart[i] &&
+                block.timestamp < users[_userId].calendarRangesEnd[i]
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -307,8 +335,7 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
     // Fucntion that implements the round-robin
     // algorithm
     function reallocateTask(bytes32 _taskId) public taskExists(_taskId) {
-        Task storage task = tasks[_taskId];
-        uint256 oldUserIndex = task.userIndex;
+        uint256 oldUserIndex = tasks[_taskId].userIndex;
         bytes32 oldUserId = userIndex[oldUserIndex];
         uint256 newUserIndex = oldUserIndex.add(1);
         bool assigneeFounded = false;
@@ -328,6 +355,7 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
             bytes32 currUserId = userIndex[newUserIndex];
             // Try to assigned that task to user (currUserId)
             assigneeFounded = addUserAllocatedTask(currUserId, _taskId);
+
             // If assignation was successful emit event TaskAllocated
             if (assigneeFounded) {
                 emit TaskAllocated(userIndex[newUserIndex], _taskId, oldUserId);
@@ -338,10 +366,11 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
                 newUserIndex = newUserIndex.add(1);
             }
         }
+
         // Assign rejected status to the task if it couldn't be assigned to
         // a user
         if (!assigneeFounded) {
-            task.status = Status.Rejected;
+            tasks[_taskId].status = Status.Rejected;
         }
     }
 
@@ -354,14 +383,12 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
         Task storage task = tasks[_taskId];
 
         // User doesn't have a task already and didn't reject current task.
-        // User is currently working
         if (
             user.available &&
             !userTaskRegistry[_userId] &&
             !task.rejecters[_userId] &&
-            user.allocatedTasksLength <= MAX_ALLOCATED_TASKS &&
-            user.calendarRanges[0][0] <= block.timestamp &&
-            user.calendarRanges[0][1] >= block.timestamp
+            user.allocatedTasksLength < MAX_ALLOCATED_TASKS &&
+            isWorking(_userId)
         ) {
             user.allocatedTasks[user.allocatedTasksLength] = _taskId;
             task.allocationIndex = user.allocatedTasksLength;
@@ -376,19 +403,21 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
         return false;
     }
 
+    // Updates user allocated tasks, replacing selected task(_taskId) with lastTask assigned to user
     function deleteUserAllocatedTask(bytes32 _userId, bytes32 _taskId) private {
         User storage user = users[_userId];
         uint256 lastTaskIndex;
-        bytes32 lastTask;
+        bytes32 lastTaskId;
         uint256 allocatedTaskIndex = tasks[_taskId].allocationIndex;
         if (user.allocatedTasksLength > 0) {
             lastTaskIndex = user.allocatedTasksLength.sub(1);
         } else {
             lastTaskIndex = user.allocatedTasksLength;
         }
-        lastTask = user.allocatedTasks[lastTaskIndex];
         user.allocatedTasksLength = lastTaskIndex;
-        user.allocatedTasks[allocatedTaskIndex] = lastTask;
+        lastTaskId = user.allocatedTasks[lastTaskIndex];
+        user.allocatedTasks[allocatedTaskIndex] = lastTaskId;
+        tasks[lastTaskId].allocationIndex = allocatedTaskIndex;
     }
 
     // Getters
@@ -402,16 +431,17 @@ contract RoundRobinCalTAA is BaseTaskAllocation {
             bool available,
             bool exists,
             uint256 allocatedTasksLength,
-            uint256[2][] memory calendarRanges
+            uint256[] memory calendarRangesStart,
+            uint256[] memory calendarRangesEnd
         )
     {
-        User storage user = users[_userId];
-        index = user.index;
-        benefits = user.benefits;
-        available = user.available;
-        exists = user.exists;
-        allocatedTasksLength = user.allocatedTasksLength;
-        calendarRanges = user.calendarRanges;
+        index = users[_userId].index;
+        benefits = users[_userId].benefits;
+        available = users[_userId].available;
+        exists = users[_userId].exists;
+        allocatedTasksLength = users[_userId].allocatedTasksLength;
+        calendarRangesStart = users[_userId].calendarRangesStart;
+        calendarRangesEnd = users[_userId].calendarRangesEnd;
     }
 
     function getAllocatedTask(bytes32 _userId, uint256 _taskIndex)

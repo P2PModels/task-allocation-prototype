@@ -1,0 +1,183 @@
+import { store, log, BigInt } from '@graphprotocol/graph-ts'
+
+import {
+  TaskCreated as TaskCreatedEvent,
+  TaskDeleted as TaskDeletedEvent,
+  TaskAccepted as TaskAcceptedEvent,
+  TaskRejected as TaskRejectedEvent,
+  TaskAllocated as TaskAllocatedEvent,
+  UserRegistered as UserRegisteredEvent,
+  UserCalendarUpdated as UserCalendarUpdatedEvent,
+  UserDeleted as UserDeletedEvent,
+  RejecterDeleted as RejecterDeletedEvent,
+  TasksRestart as TasksRestartEvent,
+  RoundRobinCalTAA
+} from '../generated/RoundRobinCalTAA/RoundRobinCalTAA'
+import {
+  STATUS_AVAILABLE,
+  STATUS_ACCEPTED,
+  STATUS_ASSIGNED,
+  STATUS_REJECTED,
+} from './task-statuses'
+import { Task, User } from "../generated/schema"
+
+export function handleTaskCreated(event: TaskCreatedEvent): void {
+
+  let contract = RoundRobinCalTAA.bind(event.address)
+  let task = contract.getTask(event.params.taskId)
+  log.debug('Created task: assignee {} allocationIndex {} endDate {} status symbol {} reallocationTime {}', [
+    task.value0.toString(),
+    task.value1.toString(),
+    task.value2.toString(),
+    task.value3.toString(),
+    task.value4.toString(),
+  ])
+
+  let taskEntity = Task.load(event.params.taskId.toString())
+
+  if (taskEntity == null) {
+    taskEntity = new Task(event.params.taskId.toString())
+  }
+
+  taskEntity.endDate = task.value2
+  taskEntity.reallocationTime = task.value4
+  taskEntity.status = STATUS_AVAILABLE
+
+  log.debug('Created task: id {}  endDate {} reallocationTime {} status {}', [
+    taskEntity.id,
+    taskEntity.endDate.toString(),
+    taskEntity.reallocationTime.toString(),
+    taskEntity.status,
+  ])
+
+  taskEntity.save()
+}
+
+export function handleTaskDeleted(event: TaskDeletedEvent): void {
+
+  log.debug('TaskDeleted event received. taskId: {}', [
+    event.params.taskId.toString(),
+  ])
+
+  store.remove('Task',event.params.taskId.toString())
+}
+
+export function handleTaskAllocated(event: TaskAllocatedEvent): void {
+
+  log.debug('TaskAllocated event received. userId: {} taskId: {}', [
+    event.params.userId.toString(),
+    event.params.taskId.toString(),
+  ])
+
+  let taskEntity = Task.load(event.params.taskId.toString())
+  if (taskEntity) {
+
+    let taskAllocation = RoundRobinCalTAA.bind(event.address)
+    let task = taskAllocation.getTask(event.params.taskId)
+  
+    taskEntity.endDate = task.value2
+    taskEntity.status = STATUS_ASSIGNED,
+    taskEntity.reallocationTime = task.value4
+
+    let userEntity = User.load(event.params.userId.toString())
+    if (userEntity) {
+      taskEntity.assignee = userEntity.id
+    }
+
+    taskEntity.save()
+  }
+}
+
+export function handleTaskAccepted(event: TaskAcceptedEvent): void {
+
+  log.debug('TaskAccepted event received. userId: {} taskId: {}', [
+    event.params.userId.toString(),
+    event.params.taskId.toString(),
+  ])
+
+  let taskEntity = Task.load(event.params.taskId.toString())
+  if (taskEntity) {
+    // Assignee field is already set on task allocation event handler
+    // (can't accept a task that wasnt assign to someone previously)
+    // Nevertheless we set the field again just in case.
+    taskEntity.assignee = event.params.userId.toString()
+    taskEntity.status = STATUS_ACCEPTED
+  
+    taskEntity.save()
+  }
+
+  let userEntity = User.load(event.params.userId.toString())
+  if (userEntity) {
+    userEntity.available = false
+    userEntity.save()
+  }
+}
+
+export function handleTaskRejected(event: TaskRejectedEvent): void {
+  log.debug('TaskRejected event received. userId: {} taskId: {}', [
+    event.params.userId.toString(),
+    event.params.taskId.toString(),
+  ])
+
+  let taskEntity = Task.load(event.params.taskId.toString())
+  if (taskEntity) {
+    taskEntity.assignee = null
+    taskEntity.status = STATUS_REJECTED
+    taskEntity.save()  
+  }
+
+  let userEntity = User.load(event.params.userId.toString())
+  if (userEntity) {
+    let rejectedTask = userEntity.rejectedTasks
+    rejectedTask.push(event.params.taskId.toString())
+    userEntity.rejectedTasks = rejectedTask
+    userEntity.save()
+  }
+}
+
+export function handleUserRegistered(event: UserRegisteredEvent): void {
+  let userEntity = User.load(event.params.userId.toString())
+
+  if (userEntity == null) {
+    userEntity = new User(event.params.userId.toString())
+  }
+
+  userEntity.benefits = BigInt.fromI32(0)
+  userEntity.available = true
+  userEntity.rejectedTasks = new Array<string> (0)
+
+  userEntity.save()
+
+}
+
+export function handleUserCalendarUpdated(event: UserCalendarUpdatedEvent): void {
+
+  let contract = RoundRobinCalTAA.bind(event.address)
+  log.debug('UserId: {}', [event.params.userId.toString()])
+  let user = contract.getUser(event.params.userId)
+  log.debug('Loading user, calendar ranges from smart conrtact: [{},{}]...', [user.value5[0].toString(),user.value6[0].toString()])
+  
+  let userEntity = User.load(event.params.userId.toString())
+  if (userEntity == null) {
+    log.debug('User {} not found, calendar ranges not loaded', [event.params.userId.toString()])
+    return
+  }
+
+  userEntity.calendarRangesStart = user.value5
+  userEntity.calendarRangesEnd = user.value6
+
+  userEntity.save()
+}
+
+export function handleUserDeleted(event: UserDeletedEvent): void {
+
+  log.debug('UserDeleted event received. userId: {}', [
+    event.params.userId.toString(),
+  ])
+
+  store.remove('User', event.params.userId.toString())
+}
+
+export function handleRejecterDeleted(event: RejecterDeletedEvent): void {}
+
+export function handleTasksRestart(event: TasksRestartEvent): void {}

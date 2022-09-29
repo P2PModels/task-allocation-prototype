@@ -1,0 +1,16 @@
+{
+  "name": "rr-cal-task-allocation",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ rr-cal-task-allocation",
+    "create-local": "graph create --node http://localhost:8020/ rr-cal-task-allocation",
+    "remove-local": "graph remove --node http://localhost:8020/ rr-cal-task-allocation",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 rr-cal-task-allocation"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.21.0",
+    "@graphprotocol/graph-ts": "0.20.0"
+  }
+}
