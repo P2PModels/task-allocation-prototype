@@ -1,0 +1,26 @@
+type Task @entity {
+  id: ID!
+  endDate: BigInt!
+  status: TaskStatus!
+  reallocationTime: BigInt!
+  assignee: User
+  rejecterUsers: [User]! @derivedFrom(field: "rejectedTasks")
+}
+
+type User @entity {
+  id: ID!
+  benefits: BigInt!
+  available: Boolean!
+  calendarRangesStart: [BigInt!]
+  calendarRangesEnd: [BigInt!]
+  rejectedTasks: [Task]!
+}
+
+enum TaskStatus {
+  NonExistent
+  Available
+  Assigned
+  Accepted
+  Rejected
+  Completed
+}

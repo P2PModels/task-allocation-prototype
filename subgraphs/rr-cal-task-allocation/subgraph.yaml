@@ -1,0 +1,54 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RoundRobinCalTAA
+    network: rinkeby
+    source:
+      address: "0xd776f92a98A5A33A1bfb081aB13B771b1E260836"
+      abi: RoundRobinCalTAA
+      startBlock: 11420000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ApiUrlSet
+        - RejecterDeleted
+        - TaskAccepted
+        - TaskAllocated
+        - TaskCreated
+        - TaskDeleted
+        - TaskRejected
+        - TasksRestart
+        - UserCalendarUpdated
+        - UserDeleted
+        - UserRegistered
+      abis:
+        - name: RoundRobinCalTAA
+          file: ./abis/RoundRobinCalTAA.json
+      eventHandlers:
+        - event: ApiUrlSet(string)
+          handler: handleApiUrlSet
+        - event: RejecterDeleted(indexed bytes32,indexed bytes32)
+          handler: handleRejecterDeleted
+        - event: TaskAccepted(indexed bytes32,indexed bytes32)
+          handler: handleTaskAccepted
+        - event: TaskAllocated(indexed bytes32,indexed bytes32,bytes32)
+          handler: handleTaskAllocated
+        - event: TaskCreated(indexed bytes32)
+          handler: handleTaskCreated
+        - event: TaskDeleted(indexed bytes32)
+          handler: handleTaskDeleted
+        - event: TaskRejected(indexed bytes32,indexed bytes32)
+          handler: handleTaskRejected
+        - event: TasksRestart(indexed address)
+          handler: handleTasksRestart
+        - event: UserCalendarUpdated(indexed bytes32)
+          handler: handleUserCalendarUpdated
+        - event: UserDeleted(indexed bytes32)
+          handler: handleUserDeleted
+        - event: UserRegistered(indexed bytes32)
+          handler: handleUserRegistered
+      file: ./src/mapping.ts

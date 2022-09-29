@@ -59,12 +59,13 @@ describe("RoundRobinCalTAA contract", function () {
   describe("Set users availability calendar", function () {
     it(`Should register the user ${users[0]} availability calendar and emit a user calendar updated event`, async function () {
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
-
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4]; // Begining of time ranges
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ]; // Ending of time ranges
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[0])
       );
@@ -72,22 +73,20 @@ describe("RoundRobinCalTAA contract", function () {
       await expect(
         roundRobinCalTAAInstance.setUserCalendarRanges(
           formatBytes32String(users[0]),
-          calendar
+          calendarRangesStart,
+          calendarRangesEnd
         )
       )
         .to.emit(roundRobinCalTAAInstance, "UserCalendarUpdated")
         .withArgs(formatBytes32String(users[0]));
     });
 
-    // Maximum time in the past 24h
-    it(`Should reject adding past time ranges to user ${users[0]} calendar`, async function () {
+    it(`Should reject start and end time ranges arrays that doesnt have same number of elements`, async function () {
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
       // Wrong time ranges, all from the past
-      calendar.push([nowInS - 3600 * 48, nowInS]); // Range now to 1h
-      calendar.push([nowInS - 3600 * 3, nowInS - 3600 * 2]);
-      calendar.push([nowInS - 3600 * 6, nowInS - 3600 * 4]);
+      let calendarRangesStart = [nowInS - 3600 * 48, nowInS - 3600 * 3];
+      let calendarRangesEnd = [nowInS, nowInS - 3600 * 2, nowInS - 3600 * 4];
 
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[0])
@@ -96,7 +95,37 @@ describe("RoundRobinCalTAA contract", function () {
       try {
         await roundRobinCalTAAInstance.setUserCalendarRanges(
           formatBytes32String(users[0]),
-          calendar
+          calendarRangesStart,
+          calendarRangesEnd
+        );
+      } catch (e) {
+        expect(e.message).to.equal(
+          "VM Exception while processing transaction: reverted with reason string 'INVALID_TIME_RANGES'"
+        );
+      }
+    });
+
+    // Maximum time in the past 24h
+    it(`Should reject adding past time ranges to user ${users[0]} calendar`, async function () {
+      // Mock availability calendar, smart contract stores timestamo in s
+      let nowInS = +(Date.now() / 1000).toFixed(0);
+      // Wrong time ranges, all from the past
+      let calendarRangesStart = [
+        nowInS - 3600 * 48,
+        nowInS - 3600 * 3,
+        nowInS - 3600 * 6,
+      ];
+      let calendarRangesEnd = [nowInS, nowInS - 3600 * 2, nowInS - 3600 * 4];
+
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[0])
+      );
+
+      try {
+        await roundRobinCalTAAInstance.setUserCalendarRanges(
+          formatBytes32String(users[0]),
+          calendarRangesStart,
+          calendarRangesEnd
         );
       } catch (e) {
         expect(e.message).to.equal(
@@ -107,21 +136,24 @@ describe("RoundRobinCalTAA contract", function () {
 
     it(`Should reject adding invalid time ranges to user ${users[0]} calendar`, async function () {
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      // Wrong time ranges, start is bigger than end
-      calendar.push([nowInS + 3600, nowInS]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 3, nowInS + 3600 * 2]);
-      calendar.push([nowInS + 3600 * 6, nowInS + 3600 * 4]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
 
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[0])
       );
 
       try {
+        // Incorrectly sent values, end values as start
         await roundRobinCalTAAInstance.setUserCalendarRanges(
           formatBytes32String(users[0]),
-          calendar
+          calendarRangesEnd,
+          calendarRangesStart
         );
       } catch (e) {
         expect(e.message).to.equal(
@@ -132,12 +164,14 @@ describe("RoundRobinCalTAA contract", function () {
 
     it(`Should reject adding, to user ${users[0]} calendar, not increasingly ordered time ranges`, async function () {
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
       // Wrong time ranges, not properly ordered
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
-      calendar.push([nowInS, nowInS + 3600]); // Range now to 1h
+      let calendarRangesStart = [nowInS + 3600 * 2, nowInS, nowInS + 3600 * 4]; // Begining of time ranges
+      let calendarRangesEnd = [
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 6,
+      ]; // Ending of time ranges
 
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[0])
@@ -146,13 +180,44 @@ describe("RoundRobinCalTAA contract", function () {
       try {
         await roundRobinCalTAAInstance.setUserCalendarRanges(
           formatBytes32String(users[0]),
-          calendar
+          calendarRangesStart,
+          calendarRangesEnd
         );
       } catch (e) {
         expect(e.message).to.equal(
           "VM Exception while processing transaction: reverted with reason string 'TIME_RANGES_NOT_INCREASINGLY_ORDERED'"
         );
       }
+    });
+
+    it(`Should get user ${users[0]}, including calendar time ranges`, async function () {
+      // Mock availability calendar, smart contract stores timestamo in s
+      let nowInS = +(Date.now() / 1000).toFixed(0);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
+
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[0])
+      );
+
+      await roundRobinCalTAAInstance.setUserCalendarRanges(
+        formatBytes32String(users[0]),
+        calendarRangesStart,
+        calendarRangesEnd
+      );
+
+      let userArray = await roundRobinCalTAAInstance.getUser(
+        formatBytes32String(users[0])
+      );
+
+      // Only checking first value of calendar, all object could be logged
+      await expect(userArray["calendarRangesStart"][0].toNumber()).to.equal(
+        calendarRangesStart[0]
+      );
     });
   });
 
@@ -193,14 +258,17 @@ describe("RoundRobinCalTAA contract", function () {
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
       await roundRobinCalTAAInstance.createTask(
         formatBytes32String(tasks[0].job_id),
@@ -261,14 +329,17 @@ describe("RoundRobinCalTAA contract", function () {
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
       await roundRobinCalTAAInstance.createTask(
         formatBytes32String(tasks[0].job_id),
@@ -300,63 +371,22 @@ describe("RoundRobinCalTAA contract", function () {
       }
     });
 
-    it(`Should reject allocating another task to user ${users[0]} which already have max number of task asigned`, async function () {
-      let maxNumOfTasks = 3;
-      await roundRobinCalTAAInstance.registerUser(
-        formatBytes32String(users[0])
-      );
-      // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
-      let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
-      await roundRobinCalTAAInstance.setUserCalendarRanges(
-        formatBytes32String(users[0]),
-        calendar
-      );
-
-      for (let i = 0; i < maxNumOfTasks; i++) {
-        await roundRobinCalTAAInstance.createTask(
-          formatBytes32String(tasks[i].job_id),
-          REALLOCATION_TIME
-        );
-        await roundRobinCalTAAInstance.allocateTask(
-          formatBytes32String(tasks[i].job_id),
-          formatBytes32String(users[0])
-        );
-      }
-
-      await roundRobinCalTAAInstance.createTask(
-        formatBytes32String(tasks[maxNumOfTasks].job_id),
-        REALLOCATION_TIME
-      );
-
-      try {
-        await roundRobinCalTAAInstance.allocateTask(
-          formatBytes32String(tasks[maxNumOfTasks].job_id),
-          formatBytes32String(users[0])
-        );
-      } catch (e) {
-        expect(e.message).to.equal(
-          "VM Exception while processing transaction: reverted with reason string 'USER_HAS_TOO_MANY_TASKS'"
-        );
-      }
-    });
-
     it(`Should reject allocating task to user ${users[0]} when she is not working`, async function () {
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS + 3600, nowInS + 3600 * 2]); // Range 1h to 2h from now
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
 
       await roundRobinCalTAAInstance.createTask(
@@ -383,14 +413,17 @@ describe("RoundRobinCalTAA contract", function () {
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
       await roundRobinCalTAAInstance.createTask(
         formatBytes32String(tasks[0].job_id),
@@ -460,14 +493,17 @@ describe("RoundRobinCalTAA contract", function () {
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
       await roundRobinCalTAAInstance.createTask(
         formatBytes32String(tasks[0].job_id),
@@ -537,21 +573,26 @@ describe("RoundRobinCalTAA contract", function () {
         formatBytes32String(users[0])
       );
       // Mock availability calendar, smart contract stores timestamo in s
-      let calendar = [];
       let nowInS = +(Date.now() / 1000).toFixed(0);
-      calendar.push([nowInS, nowInS + 3600 * 2]); // Range now to 1h
-      calendar.push([nowInS + 3600 * 2, nowInS + 3600 * 3]);
-      calendar.push([nowInS + 3600 * 4, nowInS + 3600 * 6]);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
+
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[0]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
       await roundRobinCalTAAInstance.registerUser(
         formatBytes32String(users[1])
       );
       await roundRobinCalTAAInstance.setUserCalendarRanges(
         formatBytes32String(users[1]),
-        calendar
+        calendarRangesStart,
+        calendarRangesEnd
       );
 
       await roundRobinCalTAAInstance.createTask(
@@ -592,6 +633,116 @@ describe("RoundRobinCalTAA contract", function () {
           "VM Exception while processing transaction: reverted with reason string 'TASK_DONT_EXIST'"
         );
       }
+    });
+
+    it(`Should set task status to rejected since only the only available user ${users[0]} already have max number of task assigned`, async function () {
+      let maxNumOfTasks =
+        await roundRobinCalTAAInstance.MAX_ALLOCATED_TASKS.call();
+      // Due to index initialization only one user should never be registered when trying to test reallocation
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[0])
+      );
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[1])
+      );
+      // Mock availability calendar, smart contract stores timestamo in s
+      let nowInS = +(Date.now() / 1000).toFixed(0);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
+      await roundRobinCalTAAInstance.setUserCalendarRanges(
+        formatBytes32String(users[1]),
+        calendarRangesStart,
+        calendarRangesEnd
+      );
+
+      for (let i = 0; i <= maxNumOfTasks; i++) {
+        await roundRobinCalTAAInstance.createTask(
+          formatBytes32String(tasks[i].job_id),
+          REALLOCATION_TIME
+        );
+        await roundRobinCalTAAInstance.reallocateTask(
+          formatBytes32String(tasks[i].job_id)
+        );
+      }
+
+      let reallocatedTask = await roundRobinCalTAAInstance.getTask(
+        formatBytes32String(tasks[maxNumOfTasks].job_id)
+      );
+
+      expect(reallocatedTask.status).to.equal(4); //Rejected value in enum
+    });
+
+    it(`Should set task ${tasks[0].job_id} status to rejected since no user is available`, async function () {
+      // Register user1
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[0])
+      );
+      // Mock availability calendar, smart contract stores timestamo in s
+      let nowInS = +(Date.now() / 1000).toFixed(0);
+      let calendarRangesStart = [nowInS, nowInS + 3600 * 2, nowInS + 3600 * 4];
+      let calendarRangesEnd = [
+        nowInS + 3600 * 2,
+        nowInS + 3600 * 3,
+        nowInS + 3600 * 6,
+      ];
+
+      await roundRobinCalTAAInstance.setUserCalendarRanges(
+        formatBytes32String(users[0]),
+        calendarRangesStart,
+        calendarRangesEnd
+      );
+
+      // Register user2
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[1])
+      );
+
+      // Remove first range so that the user its not available now
+      calendarRangesStart = [nowInS + 3600 * 2, nowInS + 3600 * 4];
+      calendarRangesEnd = [nowInS + 3600 * 3, nowInS + 3600 * 6];
+
+      await roundRobinCalTAAInstance.setUserCalendarRanges(
+        formatBytes32String(users[1]),
+        calendarRangesStart,
+        calendarRangesEnd
+      );
+
+      // Register user3 without availability calendar
+      await roundRobinCalTAAInstance.registerUser(
+        formatBytes32String(users[2])
+      );
+
+      // Create task
+      await roundRobinCalTAAInstance.createTask(
+        formatBytes32String(tasks[0].job_id),
+        REALLOCATION_TIME
+      );
+
+      // Allocate it
+      await roundRobinCalTAAInstance.reallocateTask(
+        formatBytes32String(tasks[0].job_id)
+      );
+
+      // User1 rejects it
+      await roundRobinCalTAAInstance.rejectTask(
+        formatBytes32String(users[0]),
+        formatBytes32String(tasks[0].job_id)
+      );
+
+      // Reallocate
+      await roundRobinCalTAAInstance.reallocateTask(
+        formatBytes32String(tasks[0].job_id)
+      );
+
+      let task = await roundRobinCalTAAInstance.getTask(
+        formatBytes32String(tasks[0].job_id)
+      );
+
+      expect(task["status"]).to.equal(4); // Rejected - 4
     });
   });
 });
