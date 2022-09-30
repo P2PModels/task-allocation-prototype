@@ -9,10 +9,10 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const RoundRobinCalTAA = await ethers.getContractFactory("RoundRobinCalTAA");
-  const RoundRobinCalTAAInstance = await RoundRobinCalTAA.deploy();
+  const contract = await ethers.getContractFactory("RoundRobinCalTAA");
+  const contractInstance = await contract.deploy();
 
-  console.log("Contract address:", RoundRobinCalTAAInstance.address);
+  console.log("Contract address:", contractInstance.address);
 }
 
 main()

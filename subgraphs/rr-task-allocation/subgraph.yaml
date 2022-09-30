@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: RoundRobinTAA
-    network: rinkeby
+    network: goerli
     source:
-      address: "0x48d0c77Cb15Bb7d6c432908F986b74820dE1ee9D"
+      address: "0x87042c1432889DE0e871F9dDf029Ad18D25792eF"
       abi: RoundRobinTAA
-      startBlock: 10400000
+      startBlock: 7685105
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
